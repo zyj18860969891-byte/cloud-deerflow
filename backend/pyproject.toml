@@ -40,6 +40,9 @@ dependencies = [
 [dependency-groups]
 dev = ["pytest>=8.0.0", "pytest-asyncio>=0.21.0", "ruff>=0.14.11"]
 
+[tool.setuptools]
+packages = ["app", "packages"]
+
 [tool.uv.workspace]
 members = ["packages/harness"]
 
