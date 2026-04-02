@@ -72,4 +72,4 @@ HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
 EXPOSE 8001
 
 # 启动应用
-CMD ["/start.sh"]
+CMD ["/app/start.sh"]
