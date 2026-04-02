@@ -24,7 +24,7 @@ venv/
 .env
 
 # Configuration files
-config.yaml
+# config.yaml  # 注释掉，允许提交到仓库用于 Railway 部署
 mcp_config.json
 extensions_config.json
 
