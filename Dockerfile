@@ -26,7 +26,7 @@ RUN pip install uv
 
 # Create virtual environment and install dependencies
 RUN uv venv .venv && \
-    .venv/bin/pip install --upgrade pip setuptools && \
+    uv pip install --upgrade pip setuptools && \
     uv pip install -e ".[dev]"
 
 # Runtime stage
