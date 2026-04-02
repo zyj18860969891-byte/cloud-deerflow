@@ -16,6 +16,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY backend/ /app/backend/
 COPY .github/ /app/.github/
 COPY README.md LICENSE /app/
+COPY config.yaml /app/
+COPY config.yaml /app/backend/
 COPY backend/pyproject.toml /app/backend/
 
 # Set working directory to backend for dependency installation
@@ -44,34 +46,34 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY backend/ /app/backend/
 COPY .github/ /app/.github/
 COPY README.md LICENSE /app/
+COPY config.yaml /app/
+COPY config.yaml /app/backend/
 
 # Copy virtual environment from builder
 COPY --from=builder /app/backend/.venv /app/backend/.venv
 
-# Copy start script from project root
+# Copy startup script
 COPY start.sh /app/start.sh
+
+# Make script executable and create Python startup helper
+RUN chmod +x /app/start.sh && \
+    python3 -c "code='''import os,sys,subprocess;cfg=os.environ.get(\"DEER_FLOW_CONFIG_PATH\",\"/app/backend/config.yaml\");print(f\"Config: {cfg}\");os.path.exists(cfg) or (print(f\"ERROR: {cfg} not found\"),sys.exit(1));os.environ[\"DEER_FLOW_CONFIG_PATH\"]=cfg;os.chdir(\"/app/backend\");os.execvp(sys.executable,[sys.executable,\"-m\",\"uvicorn\",\"app.gateway.app:app\",\"--host\",\"0.0.0.0\",\"--port\",\"8080\",\"--workers\",\"1\"])''';open('/app/startup.py','w').write('#!' + '/usr/bin/env python3\\n' + code);print('Created /app/startup.py')" && \
+    chmod +x /app/startup.py
 
 # Set working directory
 WORKDIR /app/backend
 
-# Make start script executable
-RUN chmod +x /app/start.sh
-
 # Environment variables
 ENV PATH="/app/backend/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
-    PORT=8001 \
-    WORKERS=4 \
-    ENVIRONMENT=production
-
-# Railway may override PORT via environment variable
+    PORT=8080
 
 # Health check
 HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
-    CMD curl -f http://localhost:${PORT}/health || exit 1
+    CMD curl -f http://localhost:8080/health || exit 1
 
 # Expose port
-EXPOSE 8001
+EXPOSE 8080
 
-# Run start script
-CMD ["bash", "/app/start.sh"]
+# 启动应用
+CMD ["/start.sh"]
