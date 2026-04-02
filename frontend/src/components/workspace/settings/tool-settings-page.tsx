@@ -20,8 +20,8 @@ export function ToolSettingsPage() {
   const { config, isLoading, error } = useMCPConfig();
   return (
     <SettingsSection
-      title={t.settings.tools.title}
-      description={t.settings.tools.description}
+      title={t.tools.title}
+      description={t.tools.description}
     >
       {isLoading ? (
         <div className="text-muted-foreground text-sm">{t.common.loading}</div>

@@ -1,0 +1,81 @@
+{
+  "dashboard": {
+    "title": "Dashboard",
+    "admin": {
+      "welcome": "Welcome to Admin Dashboard",
+      "overview": "System Overview",
+      "totalUsers": "Total Users",
+      "activeSessions": "Active Sessions",
+      "totalAgents": "Total Agents",
+      "systemLoad": "System Load",
+      "memoryUsage": "Memory Usage",
+      "cpuUsage": "CPU Usage",
+      "uptime": "Uptime",
+      "recentActivity": "Recent Activity",
+      "noActivity": "No recent activity",
+      "loading": "Loading dashboard data...",
+      "error": "Failed to load dashboard data"
+    },
+    "user": {
+      "welcome": "Welcome to Your Dashboard",
+      "overview": "Your Overview",
+      "cacheHitRate": "Cache Hit Rate",
+      "quotaRemaining": "Quota Remaining",
+      "toolsUsed": "Tools Used",
+      "recentSessions": "Recent Sessions",
+      "noSessions": "No recent sessions",
+      "loading": "Loading your dashboard...",
+      "error": "Failed to load your dashboard"
+    },
+    "common": {
+      "loading": "Loading...",
+      "error": "Error",
+      "retry": "Retry",
+      "refresh": "Refresh",
+      "back": "Back",
+      "close": "Close",
+      "save": "Save",
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "yes": "Yes",
+      "no": "No",
+      "ok": "OK"
+    }
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "agents": "Agents",
+    "tools": "Tools",
+    "settings": "Settings",
+    "profile": "Profile",
+    "logout": "Logout"
+  },
+  "agents": {
+    "title": "Agents",
+    "create": "Create Agent",
+    "edit": "Edit Agent",
+    "delete": "Delete Agent",
+    "name": "Name",
+    "description": "Description",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "actions": "Actions"
+  },
+  "tools": {
+    "title": "Tools",
+    "available": "Available Tools",
+    "used": "Used Tools",
+    "description": "Description",
+    "category": "Category",
+    "usage": "Usage"
+  },
+  "settings": {
+    "title": "Settings",
+    "general": "General",
+    "appearance": "Appearance",
+    "language": "Language",
+    "theme": "Theme",
+    "notifications": "Notifications"
+  }
+}

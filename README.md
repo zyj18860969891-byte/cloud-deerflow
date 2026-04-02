@@ -490,6 +490,49 @@ DEERFLOW_LANGGRAPH_URL=http://localhost:2026/api/langgraph  # LangGraph API
 
 See [`skills/public/claude-to-deerflow/SKILL.md`](skills/public/claude-to-deerflow/SKILL.md) for the full API reference.
 
+### Dashboard
+
+DeerFlow includes a comprehensive dashboard system for monitoring system performance and user activity. The dashboard provides real-time insights through both admin and user perspectives.
+
+#### Admin Dashboard
+
+The admin dashboard provides system-wide monitoring capabilities:
+
+- **System Overview**: Real-time metrics including total users, active sessions, API calls, and error rates
+- **Performance Monitoring**: Cache hit rates, response times, and system load indicators
+- **User Management**: Track active users, total user count, and user engagement metrics
+- **Cost Analysis**: Monitor API usage costs and monthly estimates
+- **Health Monitoring**: System uptime, memory usage, and CPU utilization
+
+#### User Dashboard
+
+Individual users have access to their personalized dashboard:
+
+- **Usage Statistics**: Track tool executions, success rates, and cache performance
+- **Quota Management**: Monitor remaining API quotas and storage usage
+- **Activity History**: View recent sessions and tool usage analytics
+- **Performance Metrics**: Response times and cache hit rates for your activities
+
+#### Technical Implementation
+
+The dashboard is built with modern web technologies:
+
+- **Frontend**: React 19 + TypeScript with Tailwind CSS styling
+- **State Management**: React Query for efficient data fetching and caching
+- **Internationalization**: Full multi-language support (English/Chinese)
+- **Responsive Design**: Mobile-friendly interface with adaptive layouts
+- **Real-time Updates**: Automatic data refresh with configurable intervals
+
+#### Accessing the Dashboard
+
+The dashboard is available through the main DeerFlow interface at `http://localhost:2026` after starting the development environment:
+
+```bash
+make dev
+```
+
+Navigate to the dashboard section to view system metrics or your personal usage statistics.
+
 ### Sub-Agents
 
 Complex tasks rarely fit in a single pass. DeerFlow decomposes them.
@@ -508,7 +551,7 @@ With `AioSandboxProvider`, shell execution runs inside isolated containers. With
 
 This is the difference between a chatbot with tool access and an agent with an actual execution environment.
 
-```
+```bash
 # Paths inside the sandbox container
 /mnt/user-data/
 ├── uploads/          ← your files

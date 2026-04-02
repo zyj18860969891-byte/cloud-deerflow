@@ -31,12 +31,26 @@ export interface Translations {
     preview: string;
     cancel: string;
     save: string;
+    saving: string;
+    creating: string;
     install: string;
     create: string;
     export: string;
     exportAsMarkdown: string;
     exportAsJSON: string;
     exportSuccess: string;
+    yes: string;
+    no: string;
+    none: string;
+    error: string;
+    retry: string;
+    actions: string;
+    view: string;
+    execute: string;
+    showing: string;
+    total: string;
+    previous: string;
+    next: string;
   };
 
   // Welcome
@@ -110,6 +124,7 @@ export interface Translations {
     chats: string;
     demoChats: string;
     agents: string;
+    tools: string;
   };
 
   // Agents
@@ -231,6 +246,70 @@ export interface Translations {
     toggleSidebar: string;
   };
 
+  // Tools
+  tools: {
+    title: string;
+    description: string;
+    // Tool Management Panel
+    toolList: string;
+    createTool: string;
+    createToolDescription: string;
+    editTool: string;
+    editToolDescription: string;
+    toolDetails: string;
+    toolDetailsDescription: string;
+    executeTool: string;
+    executeToolDescription: string;
+    executing: string;
+    executionSuccess: string;
+    executionFailed: string;
+    inputParameters: string;
+    inputParametersHint: string;
+    expectedParameters: string;
+    searchPlaceholder: string;
+    noToolsFound: string;
+    name: string;
+    type: string;
+    category: string;
+    status: string;
+    executions: string;
+    successRate: string;
+    actions: string;
+    view: string;
+    enabled: string;
+    disabled: string;
+    totalExecutions: string;
+    successfulExecutions: string;
+    failedExecutions: string;
+    avgExecutionTime: string;
+    lastExecutedAt: string;
+    modulePath: string;
+    className: string;
+    argsSchema: string;
+    requiredRoles: string;
+    version: string;
+    versionNotes: string;
+    tenantScoped: string;
+    isBuiltin: string;
+    isSystem: string;
+    createdFromConfig: string;
+    createdAt: string;
+    updatedAt: string;
+    confirmDeleteTitle: string;
+    confirmDeleteDescription: string;
+    tags: string;
+    statistics: string;
+    none: string;
+    // Tool types
+    types: {
+      custom: string;
+      mcp: string;
+      builtin: string;
+      agent: string;
+    };
+    invalidJSONFormat: string;
+  };
+
   // Settings
   settings: {
     title: string;
@@ -320,10 +399,6 @@ export interface Translations {
       languageTitle: string;
       languageDescription: string;
     };
-    tools: {
-      title: string;
-      description: string;
-    };
     skills: {
       title: string;
       description: string;
@@ -347,5 +422,191 @@ export interface Translations {
       emptyTitle: string;
       emptyDescription: string;
     };
+    // Dashboard
+    dashboard: {
+      title: string;
+      description: string;
+      // Admin Dashboard
+      admin: {
+        title: string;
+        description: string;
+        userManagement: string;
+        systemHealth: string;
+        performance: string;
+        security: string;
+        totalUsers: string;
+        activeUsers: string;
+        apiCalls: string;
+        errorRate: string;
+        costAnalysis: string;
+        welcome: string;
+        overview: string;
+        activeSessions: string;
+        totalAgents: string;
+        systemLoad: string;
+        memoryUsage: string;
+        cpuUsage: string;
+        uptime: string;
+        recentActivity: string;
+        noActivity: string;
+        loading: string;
+        error: string;
+      };
+      // User Dashboard
+      user: {
+        title: string;
+        description: string;
+        myUsage: string;
+        toolExecutions: string;
+        cacheHitRate: string;
+        recentActivity: string;
+        storageUsed: string;
+        apiQuota: string;
+        remainingQuota: string;
+        successRate: string;
+        apiUsage: string;
+        topTools: string;
+        welcome: string;
+        overview: string;
+        quotaRemaining: string;
+        toolsUsed: string;
+        recentSessions: string;
+        noSessions: string;
+        loading: string;
+        error: string;
+      };
+      // Common
+      common: {
+        lastUpdated: string;
+        refresh: string;
+        loading: string;
+        error: string;
+        noData: string;
+        viewDetails: string;
+        exportData: string;
+        yes: string;
+        no: string;
+        never: string;
+        retry: string;
+        back: string;
+        close: string;
+        save: string;
+        cancel: string;
+        confirm: string;
+        ok: string;
+      };
+      // Database Optimization
+      databaseOptimization: {
+        title: string;
+        description: string;
+        tabs: {
+          overview: string;
+          queryAnalysis: string;
+          indexManagement: string;
+          connectionPool: string;
+        };
+        metrics: {
+          queryTime: string;
+          avgQueryTime: string;
+          qps: string;
+          queriesPerSecond: string;
+          cacheHitRatio: string;
+          cacheEfficiency: string;
+          slowQueries: string;
+          slowQueriesCount: string;
+        };
+        charts: {
+          performanceTrend: string;
+          performanceTrendDesc: string;
+          tableSizeDistribution: string;
+          tableSizeDistributionDesc: string;
+        };
+        recommendations: {
+          title: string;
+          description: string;
+          improvement: string;
+          implementationCost: string;
+          riskLevel: string;
+        };
+        queryAnalysis: {
+          title: string;
+          description: string;
+          placeholder: string;
+          analyze: string;
+          getPlan: string;
+          executionTime: string;
+          rowsExamined: string;
+          rowsReturned: string;
+          suggestions: string;
+          indexUsage: string;
+          indexName: string;
+          used: string;
+          efficiency: string;
+          queryPlan: string;
+        };
+        slowQueries: {
+          title: string;
+          description: string;
+          query: string;
+          executionTime: string;
+          database: string;
+          user: string;
+          timestamp: string;
+        };
+        indexManagement: {
+          title: string;
+          description: string;
+          suggestions: string;
+          suggestionsDesc: string;
+          noSuggestions: string;
+          createIndex: string;
+          indexName: string;
+          indexType: string;
+          improvement: string;
+          usageReport: string;
+          usageReportDesc: string;
+          unusedIndexes: string;
+          noUnusedIndexes: string;
+          frequentlyUsed: string;
+          usageCount: string;
+          cleanupUnused: string;
+          drop: string;
+          size: string;
+          lastUsed: string;
+          actions: string;
+        };
+        tableStats: {
+          title: string;
+          description: string;
+          tableName: string;
+          rowCount: string;
+          size: string;
+          indexCount: string;
+          fragmentation: string;
+          growthRate: string;
+          lastAnalyzed: string;
+        };
+        poolMetrics: {
+          title: string;
+          details: string;
+          poolSize: string;
+          totalConnections: string;
+          checkedOut: string;
+          activeConnections: string;
+          idle: string;
+          idleConnections: string;
+          overflow: string;
+          overflowConnections: string;
+          maxOverflow: string;
+          poolTimeout: string;
+          recycle: string;
+          invalidated: string;
+          checkedIn: string;
+          utilization: string;
+        };
+      };
+    };
+
+    
   };
 }

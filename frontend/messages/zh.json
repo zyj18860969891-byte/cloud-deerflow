@@ -1,0 +1,81 @@
+{
+  "dashboard": {
+    "title": "仪表板",
+    "admin": {
+      "welcome": "欢迎来到管理员仪表板",
+      "overview": "系统概览",
+      "totalUsers": "总用户数",
+      "activeSessions": "活跃会话",
+      "totalAgents": "总代理数",
+      "systemLoad": "系统负载",
+      "memoryUsage": "内存使用",
+      "cpuUsage": "CPU使用率",
+      "uptime": "运行时间",
+      "recentActivity": "最近活动",
+      "noActivity": "无最近活动",
+      "loading": "正在加载仪表板数据...",
+      "error": "加载仪表板数据失败"
+    },
+    "user": {
+      "welcome": "欢迎来到您的仪表板",
+      "overview": "您的概览",
+      "cacheHitRate": "缓存命中率",
+      "quotaRemaining": "剩余配额",
+      "toolsUsed": "已使用工具",
+      "recentSessions": "最近会话",
+      "noSessions": "无最近会话",
+      "loading": "正在加载您的仪表板...",
+      "error": "加载您的仪表板失败"
+    },
+    "common": {
+      "loading": "加载中...",
+      "error": "错误",
+      "retry": "重试",
+      "refresh": "刷新",
+      "back": "返回",
+      "close": "关闭",
+      "save": "保存",
+      "cancel": "取消",
+      "confirm": "确认",
+      "yes": "是",
+      "no": "否",
+      "ok": "确定"
+    }
+  },
+  "navigation": {
+    "dashboard": "仪表板",
+    "agents": "代理",
+    "tools": "工具",
+    "settings": "设置",
+    "profile": "个人资料",
+    "logout": "退出登录"
+  },
+  "agents": {
+    "title": "代理",
+    "create": "创建代理",
+    "edit": "编辑代理",
+    "delete": "删除代理",
+    "name": "名称",
+    "description": "描述",
+    "status": "状态",
+    "active": "活跃",
+    "inactive": "非活跃",
+    "actions": "操作"
+  },
+  "tools": {
+    "title": "工具",
+    "available": "可用工具",
+    "used": "已使用工具",
+    "description": "描述",
+    "category": "类别",
+    "usage": "使用情况"
+  },
+  "settings": {
+    "title": "设置",
+    "general": "常规",
+    "appearance": "外观",
+    "language": "语言",
+    "theme": "主题",
+    "notifications": "通知"
+  }
+}

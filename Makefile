@@ -1,6 +1,6 @@
 # DeerFlow - Unified Development Environment
 
-.PHONY: help config config-upgrade check install dev dev-daemon start stop up down clean docker-init docker-start docker-stop docker-logs docker-logs-frontend docker-logs-gateway
+.PHONY: help config config-upgrade check install dev dev-daemon start stop up down clean docker-init docker-start docker-stop docker-logs docker-logs-frontend docker-logs-gateway validate-deploy generate-prod-config
 
 PYTHON ?= python
 BASH ?= bash
@@ -175,3 +175,23 @@ up:
 # Stop and remove production containers
 down:
 	@./scripts/deploy.sh down
+
+# ==========================================
+# Production Deployment Validation
+# ==========================================
+
+# Validate production deployment configuration
+validate-deploy:
+	@echo "=========================================="
+	@echo "  DeerFlow Production Deployment Validator"
+	@echo "=========================================="
+	@echo ""
+	@uv run python scripts/deploy_validator.py
+
+# Generate production configuration files
+generate-prod-config:
+	@echo "=========================================="
+	@echo "  DeerFlow Production Config Generator"
+	@echo "=========================================="
+	@echo ""
+	@uv run python scripts/generate_production_config.py

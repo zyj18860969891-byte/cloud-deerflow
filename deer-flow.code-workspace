@@ -12,7 +12,8 @@
         "packageManager": "ms-python.python:pip",
         "workspace": "deer-flow"
       }
-    ]
+    ],
+    "specstory.cloudSync.enabled": "always"
   },
   "launch": {
     "version": "0.2.0",

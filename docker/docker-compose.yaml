@@ -90,8 +90,13 @@ services:
     environment:
       - CI=true
       - DEER_FLOW_HOME=/app/backend/.deer-flow
+      - DEER_FLOW_CONFIG_PATH=/app/backend/config.yaml
+      - DEER_FLOW_EXTENSIONS_CONFIG_PATH=/app/backend/extensions_config.json
       - DEER_FLOW_CHANNELS_LANGGRAPH_URL=${DEER_FLOW_CHANNELS_LANGGRAPH_URL:-http://langgraph:2024}
       - DEER_FLOW_CHANNELS_GATEWAY_URL=${DEER_FLOW_CHANNELS_GATEWAY_URL:-http://gateway:8001}
+      # Multi-tenant configuration
+      - DEER_FLOW_MULTI_TENANT_ENABLED=${DEER_FLOW_MULTI_TENANT_ENABLED:-true}
+      - DEER_FLOW_TENANT_ISOLATION_LEVEL=${DEER_FLOW_TENANT_ISOLATION_LEVEL:-strict}
       # DooD path/network translation
       - DEER_FLOW_HOST_BASE_DIR=${DEER_FLOW_HOME}
       - DEER_FLOW_HOST_SKILLS_PATH=${DEER_FLOW_REPO_ROOT}/skills
@@ -145,6 +150,9 @@ services:
       - DEER_FLOW_HOST_BASE_DIR=${DEER_FLOW_HOME}
       - DEER_FLOW_HOST_SKILLS_PATH=${DEER_FLOW_REPO_ROOT}/skills
       - DEER_FLOW_SANDBOX_HOST=host.docker.internal
+      # Multi-tenant configuration
+      - DEER_FLOW_MULTI_TENANT_ENABLED=${DEER_FLOW_MULTI_TENANT_ENABLED:-true}
+      - DEER_FLOW_TENANT_ISOLATION_LEVEL=${DEER_FLOW_TENANT_ISOLATION_LEVEL:-strict}
       # Disable LangSmith tracing — LANGSMITH_API_KEY is not required.
       # Set LANGSMITH_TRACING=true and LANGSMITH_API_KEY in .env to enable.
       - LANGSMITH_TRACING=${LANGSMITH_TRACING:-false}
