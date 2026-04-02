@@ -193,56 +193,42 @@ class GatewayMetrics:
             try:
                 # Check if we're in a multi-worker environment
                 import os
-                import socket
+                import fcntl
                 
-                # Method 1: Check WORKER_ID environment variable (if set by process manager)
-                worker_id = os.environ.get("WORKER_ID", None)
-                if worker_id is not None:
-                    is_main_worker = worker_id == "0"
-                    if not is_main_worker:
-                        print(f"Worker {worker_id}: Skipping metrics server startup (only main worker runs metrics server)")
-                        self._server_started = True
-                        return
-                else:
-                    # Method 2: If WORKER_ID not set, use process ID to determine main worker
-                    # In uvicorn with multiple workers, the main worker typically has the lowest PID
-                    # We'll use a lock file approach to ensure only one worker starts the server
-                    import fcntl
-                    import tempfile
+                # Use a fixed lock file path in /tmp for cross-process locking
+                lock_path = "/tmp/deerflow_metrics_server.lock"
+                
+                try:
+                    # Open lock file (create if doesn't exist)
+                    lock_file = open(lock_path, 'w')
                     
-                    lock_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
-                    lock_path = lock_file.name
-                    lock_file.close()
+                    # Try to acquire an exclusive lock without blocking
+                    fcntl.flock(lock_file, fcntl.LOCK_EX | fcntl.LOCK_NB)
                     
-                    try:
-                        # Try to acquire an exclusive lock
-                        with open(lock_path, 'w') as f:
-                            try:
-                                fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
-                                # We got the lock, this is the main worker
-                                print(f"Main worker (PID {os.getpid()}) acquired metrics server lock")
-                            except (IOError, OSError):
-                                # Could not acquire lock, another worker already has it
-                                print(f"Worker (PID {os.getpid()}) skipping metrics server startup (another worker has lock)")
-                                self._server_started = True
-                                return
-                    except Exception as e:
-                        # If lock mechanism fails, fall back to starting server (best effort)
-                        print(f"Lock mechanism failed: {e}, proceeding with metrics server startup")
-                    finally:
-                        # Clean up lock file
-                        try:
-                            os.unlink(lock_path)
-                        except:
-                            pass
+                    # We got the lock, this is the main worker
+                    print(f"Main worker (PID {os.getpid()}) acquired metrics server lock")
+                    
+                    # Keep lock file open until server starts
+                    # (lock will be released when file closes or process exits)
+                    
+                except (IOError, OSError) as e:
+                    # Could not acquire lock, another worker already has it
+                    print(f"Worker (PID {os.getpid()}) skipping metrics server startup (another worker has lock): {e}")
+                    self._server_started = True
+                    lock_file.close() if 'lock_file' in locals() else None
+                    return
                 
                 # Try to start on the configured port first
                 try:
                     start_http_server(self.metrics_port, registry=REGISTRY)
                     self._server_started = True
                     print(f"Prometheus metrics server started on port {self.metrics_port}")
+                    
+                    # Release lock after server started
+                    lock_file.close()
+                    
                 except OSError as e:
-                    if e.errno in [98, 48]:  # Address already in use (errno 98 on Linux, 48 on macOS)
+                    if e.errno in [98, 48]:  # Address already in use
                         # Try to find an available port
                         available_port = self._find_available_port(self.metrics_port + 1)
                         if available_port:
@@ -250,13 +236,17 @@ class GatewayMetrics:
                             self._server_started = True
                             self.metrics_port = available_port
                             print(f"Prometheus metrics server started on port {available_port} (original port {self.metrics_port} was in use)")
+                            lock_file.close()
                         else:
                             print(f"Failed to find available port for metrics server after {self.metrics_port}")
+                            lock_file.close()
                     else:
                         print(f"Failed to start metrics server: {e}")
+                        lock_file.close()
                 except Exception as e:
                     # Handle other potential errors
                     print(f"Unexpected error starting metrics server: {e}")
+                    lock_file.close() if 'lock_file' in locals() else None
                         
             except Exception as e:
                 print(f"Unexpected error in metrics server startup: {e}")
