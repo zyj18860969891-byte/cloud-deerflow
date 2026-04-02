@@ -1,0 +1,25 @@
+{
+  "$schema": "https://railway.app/schemas/railway-schema.json",
+  "build": {
+    "builder": "dockerfile",
+    "dockerfile": "backend/Dockerfile"
+  },
+  "deploy": {
+    "numReplicas": 1,
+    "startCommand": "bash /app/start.sh",
+    "restartPolicyMaxRetries": 5,
+    "restartPolicyWindowSeconds": 600,
+    "healthchecks": {
+      "liveness": {
+        "path": "/health",
+        "initialDelaySeconds": 30,
+        "periodSeconds": 10
+      }
+    }
+  },
+  "variables": {
+    "PORT": "8001",
+    "WORKERS": "4",
+    "ENVIRONMENT": "production"
+  }
+}
