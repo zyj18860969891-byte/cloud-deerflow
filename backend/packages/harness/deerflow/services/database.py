@@ -103,8 +103,8 @@ async def init_db():
     """初始化数据库（创建所有表）"""
     engine = get_engine()
     async with engine.begin() as conn:
-        # 创建所有表
-        await conn.run_sync(Base.metadata.create_all)
+        # 创建所有表（检查是否已存在）
+        await conn.run_sync(lambda sync_conn: Base.metadata.create_all(sync_conn, checkfirst=True))
         logger.info("Database tables created successfully")
 
 

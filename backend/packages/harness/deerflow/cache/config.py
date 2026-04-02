@@ -70,6 +70,7 @@ class CacheMetricsConfig(BaseModel):
     track_hits_misses: bool = Field(default=True, description="是否追踪命中/未命中")
     track_latency: bool = Field(default=True, description="是否追踪延迟")
     track_memory: bool = Field(default=True, description="是否追踪内存使用")
+    collection_interval: int = Field(default=60, description="指标收集间隔（秒）")
     report_interval: int = Field(default=60, description="指标报告间隔（秒）")
 
     model_config = ConfigDict(frozen=False)
