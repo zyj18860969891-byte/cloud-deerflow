@@ -15,7 +15,8 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy project files
 COPY backend/ /app/backend/
 COPY .github/ /app/.github/
-COPY pyproject.toml README.md LICENSE /app/
+COPY README.md LICENSE /app/
+COPY backend/pyproject.toml /app/backend/
 
 # Set working directory to backend for dependency installation
 WORKDIR /app/backend
@@ -42,7 +43,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy backend and other necessary files
 COPY backend/ /app/backend/
 COPY .github/ /app/.github/
-COPY pyproject.toml README.md LICENSE /app/
+COPY README.md LICENSE /app/
 
 # Copy virtual environment from builder
 COPY --from=builder /app/backend/.venv /app/backend/.venv
