@@ -64,6 +64,8 @@ ENV PATH="/app/backend/.venv/bin:$PATH" \
     WORKERS=4 \
     ENVIRONMENT=production
 
+# Railway may override PORT via environment variable
+
 # Health check
 HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
     CMD curl -f http://localhost:${PORT}/health || exit 1
