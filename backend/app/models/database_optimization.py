@@ -229,13 +229,16 @@ class TableInfo(BaseModel):
     """表信息"""
 
     name: str = Field(..., description="表名")
-    schema: str = Field(..., description="模式名")
+    schema_name: str = Field(..., description="模式名", alias="schema")
     type: str = Field(..., description="表类型")
     rows: int | None = Field(None, description="行数")
     size_mb: float | None = Field(None, description="大小（MB）")
     indexes: list[dict[str, Any]] = Field(default_factory=list, description="索引列表")
     columns: list[dict[str, Any]] = Field(default_factory=list, description="列列表")
     last_updated: datetime | None = Field(None, description="最后更新时间")
+
+    class Config:
+        populate_by_name = True  # 允许同时使用 schema_name 和 schema
 
 
 class OptimizationAction(BaseModel):

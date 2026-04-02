@@ -193,13 +193,48 @@ class GatewayMetrics:
             try:
                 # Check if we're in a multi-worker environment
                 import os
-                worker_id = os.environ.get("WORKER_ID", "0")
-                is_main_worker = worker_id == "0"
+                import socket
                 
-                if not is_main_worker:
-                    print(f"Worker {worker_id}: Skipping metrics server startup (only main worker runs metrics server)")
-                    self._server_started = True
-                    return
+                # Method 1: Check WORKER_ID environment variable (if set by process manager)
+                worker_id = os.environ.get("WORKER_ID", None)
+                if worker_id is not None:
+                    is_main_worker = worker_id == "0"
+                    if not is_main_worker:
+                        print(f"Worker {worker_id}: Skipping metrics server startup (only main worker runs metrics server)")
+                        self._server_started = True
+                        return
+                else:
+                    # Method 2: If WORKER_ID not set, use process ID to determine main worker
+                    # In uvicorn with multiple workers, the main worker typically has the lowest PID
+                    # We'll use a lock file approach to ensure only one worker starts the server
+                    import fcntl
+                    import tempfile
+                    
+                    lock_file = tempfile.NamedTemporaryFile(mode='w', delete=False)
+                    lock_path = lock_file.name
+                    lock_file.close()
+                    
+                    try:
+                        # Try to acquire an exclusive lock
+                        with open(lock_path, 'w') as f:
+                            try:
+                                fcntl.flock(f, fcntl.LOCK_EX | fcntl.LOCK_NB)
+                                # We got the lock, this is the main worker
+                                print(f"Main worker (PID {os.getpid()}) acquired metrics server lock")
+                            except (IOError, OSError):
+                                # Could not acquire lock, another worker already has it
+                                print(f"Worker (PID {os.getpid()}) skipping metrics server startup (another worker has lock)")
+                                self._server_started = True
+                                return
+                    except Exception as e:
+                        # If lock mechanism fails, fall back to starting server (best effort)
+                        print(f"Lock mechanism failed: {e}, proceeding with metrics server startup")
+                    finally:
+                        # Clean up lock file
+                        try:
+                            os.unlink(lock_path)
+                        except:
+                            pass
                 
                 # Try to start on the configured port first
                 try:
