@@ -52,13 +52,13 @@ COPY config.yaml /app/backend/
 # Copy virtual environment from builder
 COPY --from=builder /app/backend/.venv /app/backend/.venv
 
-# Copy startup script
-COPY start.sh /app/start.sh
+# Copy startup script to root
+COPY start.sh /start.sh
 
 # Make script executable and create Python startup helper
-RUN chmod +x /app/start.sh && \
-    python3 -c "code='''import os,sys,subprocess;cfg=os.environ.get(\"DEER_FLOW_CONFIG_PATH\",\"/app/backend/config.yaml\");print(f\"Config: {cfg}\");os.path.exists(cfg) or (print(f\"ERROR: {cfg} not found\"),sys.exit(1));os.environ[\"DEER_FLOW_CONFIG_PATH\"]=cfg;os.chdir(\"/app/backend\");os.execvp(sys.executable,[sys.executable,\"-m\",\"uvicorn\",\"app.gateway.app:app\",\"--host\",\"0.0.0.0\",\"--port\",\"8080\",\"--workers\",\"1\"])''';open('/app/startup.py','w').write('#!' + '/usr/bin/env python3\\n' + code);print('Created /app/startup.py')" && \
-    chmod +x /app/startup.py
+RUN chmod +x /start.sh && \
+    python3 -c "code='''import os,sys,subprocess;cfg=os.environ.get(\"DEER_FLOW_CONFIG_PATH\",\"/app/backend/config.yaml\");print(f\"Config: {cfg}\");os.path.exists(cfg) or (print(f\"ERROR: {cfg} not found\"),sys.exit(1));os.environ[\"DEER_FLOW_CONFIG_PATH\"]=cfg;os.chdir(\"/app/backend\");os.execvp(sys.executable,[sys.executable,\"-m\",\"uvicorn\",\"app.gateway.app:app\",\"--host\",\"0.0.0.0\",\"--port\",\"8080\",\"--workers\",\"1\"])''';open('/startup.py','w').write('#!' + '/usr/bin/env python3\\n' + code);print('Created /startup.py')" && \
+    chmod +x /startup.py
 
 # Set working directory
 WORKDIR /app/backend

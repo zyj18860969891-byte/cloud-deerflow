@@ -152,13 +152,97 @@ class GatewayMetrics:
         """Start Prometheus metrics HTTP server."""
         if not self._server_started:
             try:
-                # Start Prometheus HTTP server in background
-                loop = asyncio.get_event_loop()
-                await loop.run_in_executor(None, lambda: start_http_server(self.metrics_port, registry=REGISTRY))
-                self._server_started = True
-                print(f"Prometheus metrics server started on port {self.metrics_port}")
-            except OSError as e:
-                print(f"Failed to start metrics server: {e}")
+                # Check if we're in a multi-worker environment
+                import os
+                worker_id = os.environ.get("WORKER_ID", "0")
+                is_main_worker = worker_id == "0"
+                
+                if not is_main_worker:
+                    print(f"Worker {worker_id}: Skipping metrics server startup (only main worker runs metrics server)")
+                    self._server_started = True
+                    return
+                
+                # Try to start on the configured port first
+                try:
+                    start_http_server(self.metrics_port, registry=REGISTRY)
+                    self._server_started = True
+                    print(f"Prometheus metrics server started on port {self.metrics_port}")
+                except OSError as e:
+                    if e.errno in [98, 48]:  # Address already in use (errno 98 on Linux, 48 on macOS)
+                        # Try to find an available port
+                        available_port = self._find_available_port(self.metrics_port + 1)
+                        if available_port:
+                            start_http_server(available_port, registry=REGISTRY)
+                            self._server_started = True
+                            self.metrics_port = available_port
+                            print(f"Prometheus metrics server started on port {available_port} (original port {self.metrics_port} was in use)")
+                        else:
+                            print(f"Failed to find available port for metrics server after {self.metrics_port}")
+                    else:
+                        print(f"Failed to start metrics server: {e}")
+                except Exception as e:
+                    # Handle other potential errors
+                    print(f"Unexpected error starting metrics server: {e}")
+                        
+            except Exception as e:
+                print(f"Unexpected error in metrics server startup: {e}")
+
+    def start_server_sync(self):
+        """Start Prometheus metrics HTTP server synchronously."""
+        if not self._server_started:
+            try:
+                # Check if we're in a multi-worker environment
+                import os
+                worker_id = os.environ.get("WORKER_ID", "0")
+                is_main_worker = worker_id == "0"
+                
+                if not is_main_worker:
+                    print(f"Worker {worker_id}: Skipping metrics server startup (only main worker runs metrics server)")
+                    self._server_started = True
+                    return
+                
+                # Try to start on the configured port first
+                try:
+                    start_http_server(self.metrics_port, registry=REGISTRY)
+                    self._server_started = True
+                    print(f"Prometheus metrics server started on port {self.metrics_port}")
+                except OSError as e:
+                    if e.errno in [98, 48]:  # Address already in use (errno 98 on Linux, 48 on macOS)
+                        # Try to find an available port
+                        available_port = self._find_available_port(self.metrics_port + 1)
+                        if available_port:
+                            start_http_server(available_port, registry=REGISTRY)
+                            self._server_started = True
+                            self.metrics_port = available_port
+                            print(f"Prometheus metrics server started on port {available_port} (original port {self.metrics_port} was in use)")
+                        else:
+                            print(f"Failed to find available port for metrics server after {self.metrics_port}")
+                    else:
+                        print(f"Failed to start metrics server: {e}")
+                except Exception as e:
+                    # Handle other potential errors
+                    print(f"Unexpected error starting metrics server: {e}")
+                        
+            except Exception as e:
+                print(f"Unexpected error in metrics server startup: {e}")
+
+    def _is_port_available(self, port: int) -> bool:
+        """Check if a port is available by trying to bind to it."""
+        import socket
+        try:
+            with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as sock:
+                sock.settimeout(1)
+                result = sock.connect_ex(('127.0.0.1', port))
+                return result != 0
+        except:
+            return False
+
+    def _find_available_port(self, start_port: int, max_attempts: int = 10) -> int | None:
+        """Find an available port starting from start_port."""
+        for port in range(start_port, start_port + max_attempts):
+            if self._is_port_available(port):
+                return port
+        return None
 
     def update_system_metrics(self):
         """Update system resource metrics."""

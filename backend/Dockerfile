@@ -47,5 +47,29 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Expose ports (gateway: 8001, langgraph: 2024)
 EXPOSE 8001 2024
 
-# Default command (can be overridden in docker-compose)
-CMD ["sh", "-c", "cd backend && PYTHONPATH=. uv run uvicorn app.gateway.app:app --host 0.0.0.0 --port 8001"]
+# Copy virtual environment and startup script
+COPY --from=builder /app/backend/.venv /app/backend/.venv
+COPY start.sh /app/start.sh
+
+# Make startup script executable and create Python startup helper
+RUN chmod +x /app/start.sh && \
+    python3 -c "code='''import os,sys,subprocess;cfg=os.environ.get(\"DEER_FLOW_CONFIG_PATH\",\"/app/backend/config.yaml\");print(f\"Config: {cfg}\");os.path.exists(cfg) or (print(f\"ERROR: {cfg} not found\"),sys.exit(1));os.environ[\"DEER_FLOW_CONFIG_PATH\"]=cfg;os.chdir(\"/app/backend\");os.execvp(sys.executable,[sys.executable,\"-m\",\"uvicorn\",\"app.gateway.app:app\",\"--host\",\"0.0.0.0\",\"--port\",\"8001\",\"--workers\",\"2\"])''';open('/app/startup.py','w').write('#!' + '/usr/bin/env python3\\n' + code);print('Created /app/startup.py')" && \
+    chmod +x /app/startup.py
+
+# Set working directory
+WORKDIR /app/backend
+
+# Environment variables
+ENV PATH="/app/backend/.venv/bin:$PATH" \
+    PYTHONUNBUFFERED=1 \
+    PORT=8001
+
+# Health check
+HEALTHCHECK --interval=10s --timeout=5s --start-period=30s --retries=3 \
+    CMD curl -f http://localhost:8001/health || exit 1
+
+# Expose port
+EXPOSE 8001
+
+# 启动应用
+CMD ["/start.sh"]

@@ -310,24 +310,22 @@ class CacheManager:
 
         # 内存缓存统计（同步访问）
         if self.memory_cache:
-            # 注意：这是同步调用，需要确保 memory_cache 的方法在同步上下文中安全
-            # 由于 memory_cache 使用 asyncio.Lock，这里我们直接访问内部状态
-            # 这应该在指标收集器的上下文中使用，该上下文在事件循环中运行
-            with self.memory_cache.lock:
-                total_requests = self.memory_cache.hits + self.memory_cache.misses
-                hit_rate = self.memory_cache.hits / total_requests if total_requests > 0 else 0
-                memory_usage = sum(len(str(entry.value)) for entry in self.memory_cache.cache.values())
+            # 注意：这是同步调用，直接访问内部状态（不持有锁）
+            # 指标收集是周期性的，允许轻微的数据不一致
+            total_requests = self.memory_cache.hits + self.memory_cache.misses
+            hit_rate = self.memory_cache.hits / total_requests if total_requests > 0 else 0
+            memory_usage = sum(len(str(entry.value)) for entry in self.memory_cache.cache.values())
 
-                stats["memory"] = {
-                    "enabled": True,
-                    "stats": {
-                        "size": len(self.memory_cache.cache),
-                        "max_size": self.memory_cache.config.max_size,
-                        "hits": self.memory_cache.hits,
-                        "misses": self.memory_cache.misses,
-                        "hit_rate": hit_rate,
-                        "evictions": self.memory_cache.evictions,
-                        "estimated_memory_bytes": memory_usage,
+            stats["memory"] = {
+                "enabled": True,
+                "stats": {
+                    "size": len(self.memory_cache.cache),
+                    "max_size": self.memory_cache.config.max_size,
+                    "hits": self.memory_cache.hits,
+                    "misses": self.memory_cache.misses,
+                    "hit_rate": hit_rate,
+                    "evictions": self.memory_cache.evictions,
+                    "estimated_memory_bytes": memory_usage,
                         "eviction_policy": self.memory_cache.config.eviction_policy,
                     },
                 }

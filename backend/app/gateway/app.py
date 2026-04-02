@@ -138,8 +138,10 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
 
     # Start Prometheus metrics server
     try:
-        await start_metrics_server(port=9090)
-        logger.info("Prometheus metrics server started on port 9090")
+        # Use synchronous start to avoid potential async issues
+        metrics = get_metrics()
+        metrics.start_server_sync()
+        logger.info("Prometheus metrics server started on port %d", metrics.metrics_port)
     except Exception as e:
         logger.exception(f"Failed to start metrics server: {e}")
 

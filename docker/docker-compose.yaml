@@ -65,7 +65,7 @@ services:
         APT_MIRROR: ${APT_MIRROR:-}
         UV_IMAGE: ${UV_IMAGE:-ghcr.io/astral-sh/uv:0.7.20}
     container_name: deer-flow-gateway
-    command: sh -c "cd backend && PYTHONPATH=. uv run uvicorn app.gateway.app:app --host 0.0.0.0 --port 8001 --workers 2"
+    command: sh -c "cd backend && PYTHONPATH=. uv run uvicorn app.gateway.app:app --host 0.0.0.0 --port 8001 --workers 2 --env-file .env"
     volumes:
       - ${DEER_FLOW_CONFIG_PATH}:/app/backend/config.yaml:ro
       - ${DEER_FLOW_EXTENSIONS_CONFIG_PATH}:/app/backend/extensions_config.json:ro
@@ -96,6 +96,7 @@ services:
       - DEER_FLOW_CHANNELS_GATEWAY_URL=${DEER_FLOW_CHANNELS_GATEWAY_URL:-http://gateway:8001}
       # Multi-tenant configuration
       - DEER_FLOW_MULTI_TENANT_ENABLED=${DEER_FLOW_MULTI_TENANT_ENABLED:-true}
+      - WORKER_ID=0
       - DEER_FLOW_TENANT_ISOLATION_LEVEL=${DEER_FLOW_TENANT_ISOLATION_LEVEL:-strict}
       # DooD path/network translation
       - DEER_FLOW_HOST_BASE_DIR=${DEER_FLOW_HOME}
