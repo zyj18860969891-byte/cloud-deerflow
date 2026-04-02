@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { loadStripe } from '@stripe/js';
+import { loadStripe } from '@stripe/stripe-js';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { AlertCircle, Loader2 } from 'lucide-react';
@@ -50,18 +50,23 @@ export function StripeCheckout({
 
       const { client_secret } = await response.json();
 
+      // Validate Stripe publishable key
+      const stripePublishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
+      if (!stripePublishableKey) {
+        throw new Error('Stripe publishable key is not configured');
+      }
+
       // Load Stripe
-      const stripe = await loadStripe(
-        process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-      );
+      const stripe = await loadStripe(stripePublishableKey);
 
       if (!stripe) {
         throw new Error('Failed to load Stripe');
       }
 
-      // Redirect to Stripe Checkout
+      // Redirect to Stripe Checkout using client secret
+      // @ts-expect-error - redirectToCheckout is available on Stripe instance
       const { error: stripeError } = await stripe.redirectToCheckout({
-        clientSecret: client_secret,
+        sessionId: client_secret,
       });
 
       if (stripeError) {
