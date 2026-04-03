@@ -14,7 +14,7 @@ from deerflow.services.subscription_service import SubscriptionService, Subscrip
 from deerflow.services.alipay_service import AlipayService
 from deerflow.models.subscription import SubscriptionStatus
 
-router = APIRouter(prefix="/api/subscription", tags=["subscription"])
+router = APIRouter(prefix="/api", tags=["subscription"])
 
 
 def get_tenant_id(request: Request) -> str:

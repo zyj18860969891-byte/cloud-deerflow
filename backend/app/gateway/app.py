@@ -386,7 +386,7 @@ This gateway provides custom endpoints for models, MCP configuration, skills, an
     app.include_router(dashboard.router)
 
     # Subscription API is mounted at /api/subscription
-    app.include_router(subscription.router, prefix="/api")
+    app.include_router(subscription.router)
 
     # Database Optimization API is mounted at /api/v1/database-optimization
     app.include_router(database_optimization_router, prefix="/api/v1")

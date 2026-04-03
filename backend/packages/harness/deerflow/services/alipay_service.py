@@ -29,7 +29,7 @@ class AlipayService:
         
         # Initialize Alipay client
         app_id = os.getenv("ALIPAY_APP_ID")
-        app_private_key = os.getenv("ALIPAY_APP_PRIVATE_KEY")
+        app_private_key = os.getenv("ALIPAY_PRIVATE_KEY")
         alipay_public_key = os.getenv("ALIPAY_PUBLIC_KEY")
         
         # For development, these can be optional

@@ -67,6 +67,8 @@ class SecurityConfig:
                 "/redoc",
                 "/openapi.json",
                 "/api/tenants/current",  # Tenant endpoint needs special handling
+                "/api/subscription/checkout-alipay",  # Alipay payment endpoint (no CSRF token from external client)
+                "/api/subscription/webhook-alipay",  # Alipay webhook (external callback)
             ]
         if self.audit_exclude_paths is None:
             self.audit_exclude_paths = [
