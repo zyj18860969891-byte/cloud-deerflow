@@ -1,0 +1,6208 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "DeerFlow API Gateway",
+    "description": "\n## DeerFlow API Gateway\n\nAPI Gateway for DeerFlow - A LangGraph-based AI agent backend with sandbox execution capabilities.\n\n### Features\n\n- **Models Management**: Query and retrieve available AI models\n- **MCP Configuration**: Manage Model Context Protocol (MCP) server configurations\n- **Memory Management**: Access and manage global memory data for personalized conversations\n- **Skills Management**: Query and manage skills and their enabled status\n- **Artifacts**: Access thread artifacts and generated files\n- **Health Monitoring**: System health check endpoints\n\n### Architecture\n\nLangGraph requests are handled by nginx reverse proxy.\nThis gateway provides custom endpoints for models, MCP configuration, skills, and artifacts.\n        ",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/api/models": {
+      "get": {
+        "tags": [
+          "models"
+        ],
+        "summary": "List All Models",
+        "description": "Retrieve a list of all available AI models configured in the system.",
+        "operationId": "list_models_api_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelsListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/models/{model_name}": {
+      "get": {
+        "tags": [
+          "models"
+        ],
+        "summary": "Get Model Details",
+        "description": "Retrieve detailed information about a specific AI model by its name.",
+        "operationId": "get_model_api_models__model_name__get",
+        "parameters": [
+          {
+            "name": "model_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Model Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ModelResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/mcp/config": {
+      "get": {
+        "tags": [
+          "mcp"
+        ],
+        "summary": "Get MCP Configuration",
+        "description": "Retrieve the current Model Context Protocol (MCP) server configurations.",
+        "operationId": "get_mcp_configuration_api_mcp_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/McpConfigResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "mcp"
+        ],
+        "summary": "Update MCP Configuration",
+        "description": "Update Model Context Protocol (MCP) server configurations and save to file.",
+        "operationId": "update_mcp_configuration_api_mcp_config_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/McpConfigUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/McpConfigResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/memory": {
+      "get": {
+        "tags": [
+          "memory"
+        ],
+        "summary": "Get Memory Data",
+        "description": "Retrieve the current global memory data including user context, history, and facts.",
+        "operationId": "get_memory_api_memory_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "memory"
+        ],
+        "summary": "Clear All Memory Data",
+        "description": "Delete all saved memory data and reset the memory structure to an empty state.",
+        "operationId": "clear_memory_api_memory_delete",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/memory/reload": {
+      "post": {
+        "tags": [
+          "memory"
+        ],
+        "summary": "Reload Memory Data",
+        "description": "Reload memory data from the storage file, refreshing the in-memory cache.",
+        "operationId": "reload_memory_api_memory_reload_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/memory/facts": {
+      "post": {
+        "tags": [
+          "memory"
+        ],
+        "summary": "Create Memory Fact",
+        "description": "Create a single saved memory fact manually.",
+        "operationId": "create_memory_fact_endpoint_api_memory_facts_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FactCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/memory/facts/{fact_id}": {
+      "delete": {
+        "tags": [
+          "memory"
+        ],
+        "summary": "Delete Memory Fact",
+        "description": "Delete a single saved memory fact by its fact id.",
+        "operationId": "delete_memory_fact_endpoint_api_memory_facts__fact_id__delete",
+        "parameters": [
+          {
+            "name": "fact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fact Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "memory"
+        ],
+        "summary": "Patch Memory Fact",
+        "description": "Partially update a single saved memory fact by its fact id while preserving omitted fields.",
+        "operationId": "update_memory_fact_endpoint_api_memory_facts__fact_id__patch",
+        "parameters": [
+          {
+            "name": "fact_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Fact Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/FactPatchRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/memory/config": {
+      "get": {
+        "tags": [
+          "memory"
+        ],
+        "summary": "Get Memory Configuration",
+        "description": "Retrieve the current memory system configuration.",
+        "operationId": "get_memory_config_endpoint_api_memory_config_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryConfigResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/memory/status": {
+      "get": {
+        "tags": [
+          "memory"
+        ],
+        "summary": "Get Memory Status",
+        "description": "Retrieve both memory configuration and current data in a single request.",
+        "operationId": "get_memory_status_api_memory_status_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MemoryStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/skills": {
+      "get": {
+        "tags": [
+          "skills"
+        ],
+        "summary": "List All Skills",
+        "description": "Retrieve a list of all available skills from both public and custom directories.",
+        "operationId": "list_skills_api_skills_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillsListResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/skills/{skill_name}": {
+      "get": {
+        "tags": [
+          "skills"
+        ],
+        "summary": "Get Skill Details",
+        "description": "Retrieve detailed information about a specific skill by its name.",
+        "operationId": "get_skill_api_skills__skill_name__get",
+        "parameters": [
+          {
+            "name": "skill_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Skill Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "skills"
+        ],
+        "summary": "Update Skill",
+        "description": "Update a skill's enabled status by modifying the extensions_config.json file.",
+        "operationId": "update_skill_api_skills__skill_name__put",
+        "parameters": [
+          {
+            "name": "skill_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Skill Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/skills/install": {
+      "post": {
+        "tags": [
+          "skills"
+        ],
+        "summary": "Install Skill",
+        "description": "Install a skill from a .skill file (ZIP archive) located in the thread's user-data directory.",
+        "operationId": "install_skill_api_skills_install_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SkillInstallRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SkillInstallResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/threads/{thread_id}/artifacts/{path}": {
+      "get": {
+        "tags": [
+          "artifacts"
+        ],
+        "summary": "Get Artifact File",
+        "description": "Retrieve an artifact file generated by the AI agent. Text and binary files can be viewed inline, while active web content is always downloaded.",
+        "operationId": "get_artifact_api_threads__thread_id__artifacts__path__get",
+        "parameters": [
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Thread Id"
+            }
+          },
+          {
+            "name": "path",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Path"
+            }
+          },
+          {
+            "name": "download",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Download"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/threads/{thread_id}/uploads": {
+      "post": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Upload Files",
+        "description": "Upload multiple files to a thread's uploads directory.",
+        "operationId": "upload_files_api_threads__thread_id__uploads_post",
+        "parameters": [
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_upload_files_api_threads__thread_id__uploads_post"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UploadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/threads/{thread_id}/uploads/list": {
+      "get": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "List Uploaded Files",
+        "description": "List all files in a thread's uploads directory.",
+        "operationId": "list_uploaded_files_api_threads__thread_id__uploads_list_get",
+        "parameters": [
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response List Uploaded Files Api Threads  Thread Id  Uploads List Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/threads/{thread_id}/uploads/{filename}": {
+      "delete": {
+        "tags": [
+          "uploads"
+        ],
+        "summary": "Delete Uploaded File",
+        "description": "Delete a file from a thread's uploads directory.",
+        "operationId": "delete_uploaded_file_api_threads__thread_id__uploads__filename__delete",
+        "parameters": [
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Thread Id"
+            }
+          },
+          {
+            "name": "filename",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Filename"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Delete Uploaded File Api Threads  Thread Id  Uploads  Filename  Delete"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/threads": {
+      "post": {
+        "tags": [
+          "threads"
+        ],
+        "summary": "Create Thread",
+        "description": "Create a new thread for the current tenant.\n\nThe thread_id is auto-generated as a UUID.",
+        "operationId": "create_thread_api_threads_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ThreadCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "threads"
+        ],
+        "summary": "List Threads",
+        "description": "List all threads for the current tenant.",
+        "operationId": "list_threads_api_threads_get",
+        "parameters": [
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 100,
+              "title": "Limit"
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ThreadResponse"
+                  },
+                  "title": "Response List Threads Api Threads Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/threads/{thread_id}": {
+      "get": {
+        "tags": [
+          "threads"
+        ],
+        "summary": "Get Thread",
+        "description": "Get thread information for the current tenant.",
+        "operationId": "get_thread_api_threads__thread_id__get",
+        "parameters": [
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreadResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "threads"
+        ],
+        "summary": "Delete Thread Data",
+        "description": "Delete local persisted filesystem data for a thread.\n\nThis endpoint only cleans DeerFlow-managed thread directories. LangGraph\nthread state deletion remains handled by the LangGraph API.\n\nOnly the owning tenant can delete their threads.",
+        "operationId": "delete_thread_data_api_threads__thread_id__delete",
+        "parameters": [
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ThreadDeleteResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agents": {
+      "get": {
+        "tags": [
+          "agents"
+        ],
+        "summary": "List Custom Agents",
+        "description": "List all custom agents available in the agents directory.",
+        "operationId": "list_agents_api_agents_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentsListResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "agents"
+        ],
+        "summary": "Create Custom Agent",
+        "description": "Create a new custom agent with its config and SOUL.md.",
+        "operationId": "create_agent_endpoint_api_agents_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agents/check": {
+      "get": {
+        "tags": [
+          "agents"
+        ],
+        "summary": "Check Agent Name",
+        "description": "Validate an agent name and check if it is available (case-insensitive).",
+        "operationId": "check_agent_name_api_agents_check_get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Check Agent Name Api Agents Check Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/agents/{name}": {
+      "get": {
+        "tags": [
+          "agents"
+        ],
+        "summary": "Get Custom Agent",
+        "description": "Retrieve details and SOUL.md content for a specific custom agent.",
+        "operationId": "get_agent_api_agents__name__get",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "agents"
+        ],
+        "summary": "Update Custom Agent",
+        "description": "Update an existing custom agent's config and/or SOUL.md.",
+        "operationId": "update_agent_api_agents__name__put",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AgentUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AgentResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "agents"
+        ],
+        "summary": "Delete Custom Agent",
+        "description": "Delete a custom agent and all its files (config, SOUL.md, memory).",
+        "operationId": "delete_agent_api_agents__name__delete",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/user-profile": {
+      "get": {
+        "tags": [
+          "agents"
+        ],
+        "summary": "Get User Profile",
+        "description": "Read the global USER.md file that is injected into all custom agents.",
+        "operationId": "get_user_profile_api_user_profile_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "agents"
+        ],
+        "summary": "Update User Profile",
+        "description": "Write the global USER.md file that is injected into all custom agents.",
+        "operationId": "update_user_profile_api_user_profile_put",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserProfileUpdateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserProfileResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/threads/{thread_id}/suggestions": {
+      "post": {
+        "tags": [
+          "suggestions"
+        ],
+        "summary": "Generate Follow-up Questions",
+        "description": "Generate short follow-up questions a user might ask next, based on recent conversation context.",
+        "operationId": "generate_suggestions_api_threads__thread_id__suggestions_post",
+        "parameters": [
+          {
+            "name": "thread_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Thread Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SuggestionsRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SuggestionsResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/channels/": {
+      "get": {
+        "tags": [
+          "channels"
+        ],
+        "summary": "Get Channels Status",
+        "description": "Get the status of all IM channels.",
+        "operationId": "get_channels_status_api_channels__get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelStatusResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/channels/{name}/restart": {
+      "post": {
+        "tags": [
+          "channels"
+        ],
+        "summary": "Restart Channel",
+        "description": "Restart a specific IM channel.",
+        "operationId": "restart_channel_api_channels__name__restart_post",
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ChannelRestartResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants": {
+      "get": {
+        "tags": [
+          "tenants"
+        ],
+        "summary": "Get All Tenants",
+        "description": "获取所有租户列表\n\nReturns:\n    TenantsResponse: 租户列表和总数",
+        "operationId": "get_all_tenants_api_tenants_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TenantsResponse"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "tenants"
+        ],
+        "summary": "Create Tenant",
+        "description": "创建新租户（仅限管理员）\n\nArgs:\n    tenant: 租户创建请求\n\nReturns:\n    Tenant: 新建的租户信息",
+        "operationId": "create_tenant_api_tenants_post",
+        "parameters": [
+          {
+            "name": "cookie_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "csrf_token",
+              "title": "Cookie Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantCreate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/current": {
+      "get": {
+        "tags": [
+          "tenants"
+        ],
+        "summary": "Get Current Tenant",
+        "description": "获取当前活跃租户\n\nReturns:\n    Tenant: 当前租户信息\n\nRaises:\n    HTTPException: 当前租户不存在时",
+        "operationId": "get_current_tenant_api_tenants_current_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenant_id}": {
+      "get": {
+        "tags": [
+          "tenants"
+        ],
+        "summary": "Get Tenant",
+        "description": "获取指定租户\n\nArgs:\n    tenant_id: 租户ID\n\nReturns:\n    Tenant: 租户信息\n\nRaises:\n    HTTPException: 租户不存在时",
+        "operationId": "get_tenant_api_tenants__tenant_id__get",
+        "parameters": [
+          {
+            "name": "tenant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tenant Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "tenants"
+        ],
+        "summary": "Update Tenant",
+        "description": "更新租户信息（仅限管理员）\n\nArgs:\n    tenant_id: 租户ID\n    tenant_update: 租户更新请求\n\nReturns:\n    Tenant: 更新后的租户信息\n\nRaises:\n    HTTPException: 租户不存在时",
+        "operationId": "update_tenant_api_tenants__tenant_id__put",
+        "parameters": [
+          {
+            "name": "tenant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tenant Id"
+            }
+          },
+          {
+            "name": "cookie_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "csrf_token",
+              "title": "Cookie Name"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TenantUpdate"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "tenants"
+        ],
+        "summary": "Delete Tenant",
+        "description": "删除租户（仅限管理员）\n\nArgs:\n    tenant_id: 租户ID\n\nRaises:\n    HTTPException: 租户不存在或为当前活跃租户时",
+        "operationId": "delete_tenant_api_tenants__tenant_id__delete",
+        "parameters": [
+          {
+            "name": "tenant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tenant Id"
+            }
+          },
+          {
+            "name": "cookie_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "csrf_token",
+              "title": "Cookie Name"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tenants/{tenant_id}/switch": {
+      "post": {
+        "tags": [
+          "tenants"
+        ],
+        "summary": "Switch Tenant",
+        "description": "切换当前活跃租户\n\nArgs:\n    tenant_id: 目标租户ID\n\nReturns:\n    Tenant: 新的当前租户信息\n\nRaises:\n    HTTPException: 租户不存在或状态非活跃时",
+        "operationId": "switch_tenant_api_tenants__tenant_id__switch_post",
+        "parameters": [
+          {
+            "name": "tenant_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Tenant Id"
+            }
+          },
+          {
+            "name": "cookie_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "default": "csrf_token",
+              "title": "Cookie Name"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Tenant"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "List Tools",
+        "description": "获取工具列表（支持分页和过滤）",
+        "operationId": "list_tools_api_tools_get",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 100,
+              "minimum": 1,
+              "default": 20,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "tool_type",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tool Type"
+            }
+          },
+          {
+            "name": "category",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "name": "enabled",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Enabled"
+            }
+          },
+          {
+            "name": "search",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Search"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Create Tool",
+        "description": "创建新工具",
+        "operationId": "create_tool_api_tools_post",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToolCreateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/{tool_id}": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Get Tool",
+        "description": "获取单个工具详情",
+        "operationId": "get_tool_api_tools__tool_id__get",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tool Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "patch": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Update Tool",
+        "description": "更新工具",
+        "operationId": "update_tool_api_tools__tool_id__patch",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tool Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ToolUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Delete Tool",
+        "description": "删除工具（软删除或硬删除）",
+        "operationId": "delete_tool_api_tools__tool_id__delete",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tool Id"
+            }
+          },
+          {
+            "name": "hard_delete",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "description": "是否硬删除（默认软删除）",
+              "default": false,
+              "title": "Hard Delete"
+            },
+            "description": "是否硬删除（默认软删除）"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/{tool_id}/enable": {
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Enable Tool",
+        "description": "启用工具",
+        "operationId": "enable_tool_api_tools__tool_id__enable_post",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tool Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Enable Tool Api Tools  Tool Id  Enable Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/{tool_id}/disable": {
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Disable Tool",
+        "description": "禁用工具",
+        "operationId": "disable_tool_api_tools__tool_id__disable_post",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tool Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Disable Tool Api Tools  Tool Id  Disable Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/{tool_id}/executions": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "List Tool Executions",
+        "description": "获取工具执行历史",
+        "operationId": "list_tool_executions_api_tools__tool_id__executions_get",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tool Id"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "default": 1,
+              "title": "Page"
+            }
+          },
+          {
+            "name": "page_size",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 200,
+              "minimum": 1,
+              "default": 50,
+              "title": "Page Size"
+            }
+          },
+          {
+            "name": "user_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "User Id"
+            }
+          },
+          {
+            "name": "tenant_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Tenant Id"
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Status"
+            }
+          },
+          {
+            "name": "start_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Start Date"
+            }
+          },
+          {
+            "name": "end_date",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string",
+                  "format": "date-time"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "End Date"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ToolExecutionResponse"
+                  },
+                  "title": "Response List Tool Executions Api Tools  Tool Id  Executions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/executions/{execution_id}": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Get Execution",
+        "description": "获取单个执行记录详情",
+        "operationId": "get_execution_api_tools_executions__execution_id__get",
+        "parameters": [
+          {
+            "name": "execution_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Execution Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolExecutionResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/stats/summary": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Get Tools Summary",
+        "description": "获取工具统计摘要",
+        "operationId": "get_tools_summary_api_tools_stats_summary_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ToolStats"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/stats/execution-trends": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Get Execution Trends",
+        "description": "获取执行趋势数据（按天）",
+        "operationId": "get_execution_trends_api_tools_stats_execution_trends_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 90,
+              "minimum": 1,
+              "default": 7,
+              "title": "Days"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Execution Trends Api Tools Stats Execution Trends Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/{tool_id}/permissions": {
+      "get": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "List Tool Permissions",
+        "description": "获取工具权限列表",
+        "operationId": "list_tool_permissions_api_tools__tool_id__permissions_get",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tool Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ToolPermissionResponse"
+                  },
+                  "title": "Response List Tool Permissions Api Tools  Tool Id  Permissions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Add Tool Permission",
+        "description": "添加工具权限",
+        "operationId": "add_tool_permission_api_tools__tool_id__permissions_post",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tool Id"
+            }
+          },
+          {
+            "name": "role",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "角色名称",
+              "title": "Role"
+            },
+            "description": "角色名称"
+          },
+          {
+            "name": "can_execute",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Can Execute"
+            }
+          },
+          {
+            "name": "can_view",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": true,
+              "title": "Can View"
+            }
+          },
+          {
+            "name": "can_edit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Can Edit"
+            }
+          },
+          {
+            "name": "can_delete",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Can Delete"
+            }
+          },
+          {
+            "name": "max_calls_per_day",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "integer"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Max Calls Per Day"
+            }
+          },
+          {
+            "name": "allowed_tenants",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Allowed Tenants"
+            }
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Add Tool Permission Api Tools  Tool Id  Permissions Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/tools/{tool_id}/permissions/{permission_id}": {
+      "delete": {
+        "tags": [
+          "tools"
+        ],
+        "summary": "Remove Tool Permission",
+        "description": "删除工具权限",
+        "operationId": "remove_tool_permission_api_tools__tool_id__permissions__permission_id__delete",
+        "parameters": [
+          {
+            "name": "tool_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Tool Id"
+            }
+          },
+          {
+            "name": "permission_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "title": "Permission Id"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/admin": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Get Admin Dashboard",
+        "description": "Get admin dashboard data.\n\nRequires admin permissions.",
+        "operationId": "get_admin_dashboard_api_dashboard_admin_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AdminDashboardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/user": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Get User Dashboard",
+        "description": "Get user dashboard data.\n\nReturns dashboard data for the current user.",
+        "operationId": "get_user_dashboard_api_dashboard_user_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserDashboardResponse"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/dashboard/export/{type}": {
+      "get": {
+        "tags": [
+          "dashboard"
+        ],
+        "summary": "Export Dashboard Data",
+        "description": "Export dashboard data as CSV.\n\nArgs:\n    type: \"admin\" or \"user\"",
+        "operationId": "export_dashboard_data_api_dashboard_export__type__get",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Type"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscription/checkout": {
+      "post": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Create Checkout Session",
+        "description": "Create Stripe Checkout Session.",
+        "operationId": "create_checkout_session_api_subscription_checkout_post",
+        "parameters": [
+          {
+            "name": "plan_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan Id"
+            }
+          },
+          {
+            "name": "price_id",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Price Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscription/webhook": {
+      "post": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Handle Webhook",
+        "description": "Handle Stripe webhook events.",
+        "operationId": "handle_webhook_api_subscription_webhook_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscription/checkout-alipay": {
+      "post": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Create Alipay Checkout",
+        "description": "Create Alipay payment URL for subscription.",
+        "operationId": "create_alipay_checkout_api_subscription_checkout_alipay_post",
+        "parameters": [
+          {
+            "name": "plan",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Plan"
+            }
+          },
+          {
+            "name": "return_url",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "title": "Return Url"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscription/webhook-alipay": {
+      "post": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Handle Alipay Webhook",
+        "description": "Handle Alipay webhook notifications.",
+        "operationId": "handle_alipay_webhook_api_subscription_webhook_alipay_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscription/current": {
+      "get": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Get Current Subscription",
+        "description": "Get current subscription information.",
+        "operationId": "get_current_subscription_api_subscription_current_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscription/cancel": {
+      "post": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Cancel Subscription",
+        "description": "Cancel subscription.",
+        "operationId": "cancel_subscription_api_subscription_cancel_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscription/usage": {
+      "get": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Get Usage Metrics",
+        "description": "Get current usage metrics.",
+        "operationId": "get_usage_metrics_api_subscription_usage_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/subscription/plans": {
+      "get": {
+        "tags": [
+          "subscription"
+        ],
+        "summary": "Get Subscription Plans",
+        "description": "Get available subscription plans (quarterly billing).",
+        "operationId": "get_subscription_plans_api_subscription_plans_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/health": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Health Check",
+        "description": "数据库优化服务健康检查",
+        "operationId": "health_check_api_v1_api_v1_database_optimization_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {}
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/analyze-query-performance": {
+      "post": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Analyze Query Performance",
+        "description": "分析查询性能\n\nArgs:\n    request: 包含要分析的查询和表名\n    engine: 数据库引擎\n    current_user: 当前管理员用户\n\nReturns:\n    QueryPerformanceAnalysis: 查询性能分析结果",
+        "operationId": "analyze_query_performance_api_v1_api_v1_database_optimization_analyze_query_performance_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OptimizationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/QueryPerformanceAnalysis"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/index-suggestions": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Index Suggestions",
+        "description": "获取索引建议\n\nArgs:\n    table_name: 表名，可选\n    engine: 数据库引擎\n    current_user: 当前管理员用户\n\nReturns:\n    List[IndexSuggestion]: 索引建议列表",
+        "operationId": "get_index_suggestions_api_v1_api_v1_database_optimization_index_suggestions_get",
+        "parameters": [
+          {
+            "name": "table_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "表名，如果为空则分析所有表",
+              "title": "Table Name"
+            },
+            "description": "表名，如果为空则分析所有表"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IndexSuggestion"
+                  },
+                  "title": "Response Get Index Suggestions Api V1 Api V1 Database Optimization Index Suggestions Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/table-statistics": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Table Statistics",
+        "description": "获取表统计信息\n\nArgs:\n    table_name: 表名，可选\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    List[TableStatistics]: 表统计信息列表",
+        "operationId": "get_table_statistics_api_v1_api_v1_database_optimization_table_statistics_get",
+        "parameters": [
+          {
+            "name": "table_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "表名，如果为空则获取所有表统计",
+              "title": "Table Name"
+            },
+            "description": "表名，如果为空则获取所有表统计"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/TableStatistics"
+                  },
+                  "title": "Response Get Table Statistics Api V1 Api V1 Database Optimization Table Statistics Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/index-usage": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Index Usage",
+        "description": "获取索引使用情况报告\n\nArgs:\n    table_name: 表名，可选\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    IndexUsageReport: 索引使用情况报告",
+        "operationId": "get_index_usage_api_v1_api_v1_database_optimization_index_usage_get",
+        "parameters": [
+          {
+            "name": "table_name",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "description": "表名，可选",
+              "title": "Table Name"
+            },
+            "description": "表名，可选"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IndexUsageReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/connection-pool-metrics": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Connection Pool Metrics",
+        "description": "获取连接池指标\n\nArgs:\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    ConnectionPoolMetrics: 连接池指标",
+        "operationId": "get_connection_pool_metrics_api_v1_api_v1_database_optimization_connection_pool_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ConnectionPoolMetrics"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/optimize-connection-pool": {
+      "post": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Optimize Connection Pool",
+        "description": "优化连接池配置\n\nArgs:\n    background_tasks: 后台任务\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    Dict[str, Any]: 优化结果",
+        "operationId": "optimize_connection_pool_api_v1_api_v1_database_optimization_optimize_connection_pool_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Optimize Connection Pool Api V1 Api V1 Database Optimization Optimize Connection Pool Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/create-index": {
+      "post": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Create Index",
+        "description": "创建推荐索引\n\nArgs:\n    request: 索引创建请求\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    Dict[str, Any]: 创建结果",
+        "operationId": "create_index_api_v1_api_v1_database_optimization_create_index_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IndexCreationRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Create Index Api V1 Api V1 Database Optimization Create Index Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/optimization-report": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Optimization Report",
+        "description": "获取数据库优化报告\n\nArgs:\n    days: 报告天数\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    OptimizationReport: 数据库优化报告",
+        "operationId": "get_optimization_report_api_v1_api_v1_database_optimization_optimization_report_get",
+        "parameters": [
+          {
+            "name": "days",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 30,
+              "minimum": 1,
+              "description": "报告天数",
+              "default": 7,
+              "title": "Days"
+            },
+            "description": "报告天数"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OptimizationReport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/run-benchmark": {
+      "post": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Run Database Benchmark",
+        "description": "运行数据库性能基准测试\n\nArgs:\n    background_tasks: 后台任务\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    Dict[str, Any]: 基准测试启动结果",
+        "operationId": "run_database_benchmark_api_v1_api_v1_database_optimization_run_benchmark_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Run Database Benchmark Api V1 Api V1 Database Optimization Run Benchmark Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/slow-queries": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Slow Queries",
+        "description": "获取慢查询列表\n\nArgs:\n    threshold: 慢查询阈值（秒）\n    limit: 返回数量限制\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    List[Dict[str, Any]]: 慢查询列表",
+        "operationId": "get_slow_queries_api_v1_api_v1_database_optimization_slow_queries_get",
+        "parameters": [
+          {
+            "name": "threshold",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "number",
+              "minimum": 0.1,
+              "description": "慢查询阈值（秒）",
+              "default": 1.0,
+              "title": "Threshold"
+            },
+            "description": "慢查询阈值（秒）"
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "maximum": 1000,
+              "minimum": 1,
+              "description": "返回数量限制",
+              "default": 100,
+              "title": "Limit"
+            },
+            "description": "返回数量限制"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  },
+                  "title": "Response Get Slow Queries Api V1 Api V1 Database Optimization Slow Queries Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/query-plan": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Query Plan",
+        "description": "获取查询执行计划\n\nArgs:\n    query: SQL查询\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    Dict[str, Any]: 查询执行计划",
+        "operationId": "get_query_plan_api_v1_api_v1_database_optimization_query_plan_get",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "description": "要分析的SQL查询",
+              "title": "Query"
+            },
+            "description": "要分析的SQL查询"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true,
+                  "title": "Response Get Query Plan Api V1 Api V1 Database Optimization Query Plan Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/tables": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Tables",
+        "description": "获取数据库表列表\n\nArgs:\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    List[Dict[str, Any]]: 表列表",
+        "operationId": "get_tables_api_v1_api_v1_database_optimization_tables_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response Get Tables Api V1 Api V1 Database Optimization Tables Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/database-metrics": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Database Metrics",
+        "description": "获取数据库性能指标\n\nArgs:\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    Dict[str, Any]: 数据库性能指标",
+        "operationId": "get_database_metrics_api_v1_api_v1_database_optimization_database_metrics_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Get Database Metrics Api V1 Api V1 Database Optimization Database Metrics Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/cleanup-unused-indexes": {
+      "post": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Cleanup Unused Indexes",
+        "description": "清理未使用的索引\n\nArgs:\n    background_tasks: 后台任务\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    Dict[str, Any]: 清理结果",
+        "operationId": "cleanup_unused_indexes_api_v1_api_v1_database_optimization_cleanup_unused_indexes_post",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Cleanup Unused Indexes Api V1 Api V1 Database Optimization Cleanup Unused Indexes Post"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v1/api/v1/database-optimization/recommendations": {
+      "get": {
+        "tags": [
+          "database-optimization"
+        ],
+        "summary": "Get Optimization Recommendations",
+        "description": "获取数据库优化建议\n\nArgs:\n    engine: 数据库引擎\n    current_user: 当前激活用户\n\nReturns:\n    List[Dict[str, Any]]: 优化建议列表",
+        "operationId": "get_optimization_recommendations_api_v1_api_v1_database_optimization_recommendations_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "additionalProperties": true,
+                    "type": "object"
+                  },
+                  "type": "array",
+                  "title": "Response Get Optimization Recommendations Api V1 Api V1 Database Optimization Recommendations Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Health Check",
+        "description": "Health check endpoint.\n\nReturns:\n    Service health status information.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": true,
+                  "type": "object",
+                  "title": "Response Health Check Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AdminDashboardResponse": {
+        "properties": {
+          "total_users": {
+            "type": "integer",
+            "title": "Total Users"
+          },
+          "active_users": {
+            "type": "integer",
+            "title": "Active Users"
+          },
+          "api_calls_today": {
+            "type": "integer",
+            "title": "Api Calls Today"
+          },
+          "error_rate": {
+            "type": "number",
+            "title": "Error Rate"
+          },
+          "system_health": {
+            "type": "number",
+            "title": "System Health"
+          },
+          "cache_hit_rate": {
+            "type": "number",
+            "title": "Cache Hit Rate"
+          },
+          "total_cost": {
+            "type": "number",
+            "title": "Total Cost"
+          },
+          "avg_response_time": {
+            "type": "integer",
+            "title": "Avg Response Time"
+          },
+          "system_metrics": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "System Metrics"
+          },
+          "recent_errors": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Recent Errors"
+          },
+          "top_users": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Top Users"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_users",
+          "active_users",
+          "api_calls_today",
+          "error_rate",
+          "system_health",
+          "cache_hit_rate",
+          "total_cost",
+          "avg_response_time",
+          "system_metrics",
+          "recent_errors",
+          "top_users"
+        ],
+        "title": "AdminDashboardResponse",
+        "description": "Admin dashboard data response."
+      },
+      "AgentCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Agent name (must match ^[A-Za-z0-9-]+$, stored as lowercase)"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Agent description",
+            "default": ""
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "Optional model override"
+          },
+          "tool_groups": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Groups",
+            "description": "Optional tool group whitelist"
+          },
+          "soul": {
+            "type": "string",
+            "title": "Soul",
+            "description": "SOUL.md content — agent personality and behavioral guardrails",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "AgentCreateRequest",
+        "description": "Request body for creating a custom agent."
+      },
+      "AgentResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Agent name (hyphen-case)"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Agent description",
+            "default": ""
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "Optional model override"
+          },
+          "tool_groups": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Groups",
+            "description": "Optional tool group whitelist"
+          },
+          "soul": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Soul",
+            "description": "SOUL.md content (included on GET /{name})"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "AgentResponse",
+        "description": "Response model for a custom agent."
+      },
+      "AgentUpdateRequest": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Updated description"
+          },
+          "model": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model",
+            "description": "Updated model override"
+          },
+          "tool_groups": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tool Groups",
+            "description": "Updated tool group whitelist"
+          },
+          "soul": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Soul",
+            "description": "Updated SOUL.md content"
+          }
+        },
+        "type": "object",
+        "title": "AgentUpdateRequest",
+        "description": "Request body for updating a custom agent."
+      },
+      "AgentsListResponse": {
+        "properties": {
+          "agents": {
+            "items": {
+              "$ref": "#/components/schemas/AgentResponse"
+            },
+            "type": "array",
+            "title": "Agents"
+          }
+        },
+        "type": "object",
+        "required": [
+          "agents"
+        ],
+        "title": "AgentsListResponse",
+        "description": "Response model for listing all custom agents."
+      },
+      "Body_upload_files_api_threads__thread_id__uploads_post": {
+        "properties": {
+          "files": {
+            "items": {
+              "type": "string",
+              "format": "binary"
+            },
+            "type": "array",
+            "title": "Files"
+          }
+        },
+        "type": "object",
+        "required": [
+          "files"
+        ],
+        "title": "Body_upload_files_api_threads__thread_id__uploads_post"
+      },
+      "ChannelRestartResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "title": "ChannelRestartResponse"
+      },
+      "ChannelStatusResponse": {
+        "properties": {
+          "service_running": {
+            "type": "boolean",
+            "title": "Service Running"
+          },
+          "channels": {
+            "additionalProperties": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "object",
+            "title": "Channels"
+          }
+        },
+        "type": "object",
+        "required": [
+          "service_running",
+          "channels"
+        ],
+        "title": "ChannelStatusResponse"
+      },
+      "ConnectionPoolMetrics": {
+        "properties": {
+          "pool_size": {
+            "type": "integer",
+            "title": "Pool Size",
+            "description": "连接池大小"
+          },
+          "checked_out": {
+            "type": "integer",
+            "title": "Checked Out",
+            "description": "已检查出的连接数"
+          },
+          "idle": {
+            "type": "integer",
+            "title": "Idle",
+            "description": "空闲连接数"
+          },
+          "overflow": {
+            "type": "integer",
+            "title": "Overflow",
+            "description": "溢出连接数"
+          },
+          "checked_in": {
+            "type": "integer",
+            "title": "Checked In",
+            "description": "已检查入的连接数"
+          },
+          "max_overflow": {
+            "type": "integer",
+            "title": "Max Overflow",
+            "description": "最大溢出连接数"
+          },
+          "pool_timeout": {
+            "type": "number",
+            "title": "Pool Timeout",
+            "description": "连接池超时时间"
+          },
+          "recycle": {
+            "type": "integer",
+            "title": "Recycle",
+            "description": "连接回收时间"
+          },
+          "invalidated": {
+            "type": "integer",
+            "title": "Invalidated",
+            "description": "无效连接数"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp",
+            "description": "指标时间戳"
+          }
+        },
+        "type": "object",
+        "required": [
+          "pool_size",
+          "checked_out",
+          "idle",
+          "overflow",
+          "checked_in",
+          "max_overflow",
+          "pool_timeout",
+          "recycle",
+          "invalidated"
+        ],
+        "title": "ConnectionPoolMetrics",
+        "description": "连接池指标"
+      },
+      "ContextSection": {
+        "properties": {
+          "summary": {
+            "type": "string",
+            "title": "Summary",
+            "description": "Summary content",
+            "default": ""
+          },
+          "updatedAt": {
+            "type": "string",
+            "title": "Updatedat",
+            "description": "Last update timestamp",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "ContextSection",
+        "description": "Model for context sections (user and history)."
+      },
+      "Fact": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "Unique identifier for the fact"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Fact content"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Fact category",
+            "default": "context"
+          },
+          "confidence": {
+            "type": "number",
+            "title": "Confidence",
+            "description": "Confidence score (0-1)",
+            "default": 0.5
+          },
+          "createdAt": {
+            "type": "string",
+            "title": "Createdat",
+            "description": "Creation timestamp",
+            "default": ""
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "description": "Source thread ID",
+            "default": "unknown"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "content"
+        ],
+        "title": "Fact",
+        "description": "Model for a memory fact."
+      },
+      "FactCreateRequest": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Content",
+            "description": "Fact content"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Fact category",
+            "default": "context"
+          },
+          "confidence": {
+            "type": "number",
+            "maximum": 1.0,
+            "minimum": 0.0,
+            "title": "Confidence",
+            "description": "Confidence score (0-1)",
+            "default": 0.5
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "FactCreateRequest",
+        "description": "Request model for creating a memory fact."
+      },
+      "FactPatchRequest": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content",
+            "description": "Fact content"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category",
+            "description": "Fact category"
+          },
+          "confidence": {
+            "anyOf": [
+              {
+                "type": "number",
+                "maximum": 1.0,
+                "minimum": 0.0
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Confidence",
+            "description": "Confidence score (0-1)"
+          }
+        },
+        "type": "object",
+        "title": "FactPatchRequest",
+        "description": "PATCH request model that preserves existing values for omitted fields."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "HistoryContext": {
+        "properties": {
+          "recentMonths": {
+            "$ref": "#/components/schemas/ContextSection"
+          },
+          "earlierContext": {
+            "$ref": "#/components/schemas/ContextSection"
+          },
+          "longTermBackground": {
+            "$ref": "#/components/schemas/ContextSection"
+          }
+        },
+        "type": "object",
+        "title": "HistoryContext",
+        "description": "Model for history context."
+      },
+      "IndexCreationRequest": {
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "title": "Table Name",
+            "description": "表名"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columns",
+            "description": "列名列表"
+          },
+          "index_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Index Name",
+            "description": "索引名"
+          },
+          "index_type": {
+            "$ref": "#/components/schemas/IndexType",
+            "description": "索引类型",
+            "default": "btree"
+          },
+          "unique": {
+            "type": "boolean",
+            "title": "Unique",
+            "description": "是否唯一索引",
+            "default": false
+          },
+          "concurrently": {
+            "type": "boolean",
+            "title": "Concurrently",
+            "description": "是否并发创建",
+            "default": true
+          },
+          "if_not_exists": {
+            "type": "boolean",
+            "title": "If Not Exists",
+            "description": "如果不存在则创建",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "table_name",
+          "columns"
+        ],
+        "title": "IndexCreationRequest",
+        "description": "索引创建请求"
+      },
+      "IndexSuggestion": {
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "title": "Table Name",
+            "description": "表名"
+          },
+          "columns": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Columns",
+            "description": "列名列表"
+          },
+          "index_name": {
+            "type": "string",
+            "title": "Index Name",
+            "description": "建议的索引名"
+          },
+          "index_type": {
+            "$ref": "#/components/schemas/IndexType",
+            "description": "索引类型",
+            "default": "btree"
+          },
+          "reason": {
+            "type": "string",
+            "title": "Reason",
+            "description": "创建索引的原因"
+          },
+          "estimated_improvement": {
+            "type": "number",
+            "title": "Estimated Improvement",
+            "description": "预估改进百分比"
+          },
+          "current_performance": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Current Performance",
+            "description": "当前性能指标"
+          },
+          "priority": {
+            "type": "string",
+            "title": "Priority",
+            "description": "优先级 (high/medium/low)"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At",
+            "description": "建议创建时间"
+          }
+        },
+        "type": "object",
+        "required": [
+          "table_name",
+          "columns",
+          "index_name",
+          "reason",
+          "estimated_improvement",
+          "priority"
+        ],
+        "title": "IndexSuggestion",
+        "description": "索引建议"
+      },
+      "IndexType": {
+        "type": "string",
+        "enum": [
+          "btree",
+          "hash",
+          "gin",
+          "gist",
+          "spatial",
+          "fulltext"
+        ],
+        "title": "IndexType",
+        "description": "索引类型枚举"
+      },
+      "IndexUsageReport": {
+        "properties": {
+          "table_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table Name",
+            "description": "表名"
+          },
+          "indexes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Indexes",
+            "description": "索引使用情况"
+          },
+          "unused_indexes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Unused Indexes",
+            "description": "未使用的索引"
+          },
+          "frequently_used_indexes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Frequently Used Indexes",
+            "description": "频繁使用的索引"
+          },
+          "recommendations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommendations",
+            "description": "建议"
+          },
+          "report_timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Report Timestamp",
+            "description": "报告时间戳"
+          }
+        },
+        "type": "object",
+        "title": "IndexUsageReport",
+        "description": "索引使用情况报告"
+      },
+      "McpConfigResponse": {
+        "properties": {
+          "mcp_servers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/McpServerConfigResponse"
+            },
+            "type": "object",
+            "title": "Mcp Servers",
+            "description": "Map of MCP server name to configuration"
+          }
+        },
+        "type": "object",
+        "title": "McpConfigResponse",
+        "description": "Response model for MCP configuration."
+      },
+      "McpConfigUpdateRequest": {
+        "properties": {
+          "mcp_servers": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/McpServerConfigResponse"
+            },
+            "type": "object",
+            "title": "Mcp Servers",
+            "description": "Map of MCP server name to configuration"
+          }
+        },
+        "type": "object",
+        "required": [
+          "mcp_servers"
+        ],
+        "title": "McpConfigUpdateRequest",
+        "description": "Request model for updating MCP configuration."
+      },
+      "McpOAuthConfigResponse": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "Whether OAuth token injection is enabled",
+            "default": true
+          },
+          "token_url": {
+            "type": "string",
+            "title": "Token Url",
+            "description": "OAuth token endpoint URL",
+            "default": ""
+          },
+          "grant_type": {
+            "type": "string",
+            "enum": [
+              "client_credentials",
+              "refresh_token"
+            ],
+            "title": "Grant Type",
+            "description": "OAuth grant type",
+            "default": "client_credentials"
+          },
+          "client_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Id",
+            "description": "OAuth client ID"
+          },
+          "client_secret": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Client Secret",
+            "description": "OAuth client secret"
+          },
+          "refresh_token": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Refresh Token",
+            "description": "OAuth refresh token"
+          },
+          "scope": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scope",
+            "description": "OAuth scope"
+          },
+          "audience": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Audience",
+            "description": "OAuth audience"
+          },
+          "token_field": {
+            "type": "string",
+            "title": "Token Field",
+            "description": "Token response field containing access token",
+            "default": "access_token"
+          },
+          "token_type_field": {
+            "type": "string",
+            "title": "Token Type Field",
+            "description": "Token response field containing token type",
+            "default": "token_type"
+          },
+          "expires_in_field": {
+            "type": "string",
+            "title": "Expires In Field",
+            "description": "Token response field containing expires-in seconds",
+            "default": "expires_in"
+          },
+          "default_token_type": {
+            "type": "string",
+            "title": "Default Token Type",
+            "description": "Default token type when response omits token_type",
+            "default": "Bearer"
+          },
+          "refresh_skew_seconds": {
+            "type": "integer",
+            "title": "Refresh Skew Seconds",
+            "description": "Refresh this many seconds before expiry",
+            "default": 60
+          },
+          "extra_token_params": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Extra Token Params",
+            "description": "Additional form params sent to token endpoint"
+          }
+        },
+        "type": "object",
+        "title": "McpOAuthConfigResponse",
+        "description": "OAuth configuration for an MCP server."
+      },
+      "McpServerConfigResponse": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "Whether this MCP server is enabled",
+            "default": true
+          },
+          "type": {
+            "type": "string",
+            "title": "Type",
+            "description": "Transport type: 'stdio', 'sse', or 'http'",
+            "default": "stdio"
+          },
+          "command": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Command",
+            "description": "Command to execute to start the MCP server (for stdio type)"
+          },
+          "args": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Args",
+            "description": "Arguments to pass to the command (for stdio type)"
+          },
+          "env": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Env",
+            "description": "Environment variables for the MCP server"
+          },
+          "url": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Url",
+            "description": "URL of the MCP server (for sse or http type)"
+          },
+          "headers": {
+            "additionalProperties": {
+              "type": "string"
+            },
+            "type": "object",
+            "title": "Headers",
+            "description": "HTTP headers to send (for sse or http type)"
+          },
+          "oauth": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/McpOAuthConfigResponse"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "OAuth configuration for MCP HTTP/SSE servers"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Human-readable description of what this MCP server provides",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "McpServerConfigResponse",
+        "description": "Response model for MCP server configuration."
+      },
+      "MemoryConfigResponse": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "Whether memory is enabled"
+          },
+          "storage_path": {
+            "type": "string",
+            "title": "Storage Path",
+            "description": "Path to memory storage file"
+          },
+          "debounce_seconds": {
+            "type": "integer",
+            "title": "Debounce Seconds",
+            "description": "Debounce time for memory updates"
+          },
+          "max_facts": {
+            "type": "integer",
+            "title": "Max Facts",
+            "description": "Maximum number of facts to store"
+          },
+          "fact_confidence_threshold": {
+            "type": "number",
+            "title": "Fact Confidence Threshold",
+            "description": "Minimum confidence threshold for facts"
+          },
+          "injection_enabled": {
+            "type": "boolean",
+            "title": "Injection Enabled",
+            "description": "Whether memory injection is enabled"
+          },
+          "max_injection_tokens": {
+            "type": "integer",
+            "title": "Max Injection Tokens",
+            "description": "Maximum tokens for memory injection"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled",
+          "storage_path",
+          "debounce_seconds",
+          "max_facts",
+          "fact_confidence_threshold",
+          "injection_enabled",
+          "max_injection_tokens"
+        ],
+        "title": "MemoryConfigResponse",
+        "description": "Response model for memory configuration."
+      },
+      "MemoryResponse": {
+        "properties": {
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "description": "Memory schema version",
+            "default": "1.0"
+          },
+          "lastUpdated": {
+            "type": "string",
+            "title": "Lastupdated",
+            "description": "Last update timestamp",
+            "default": ""
+          },
+          "user": {
+            "$ref": "#/components/schemas/UserContext"
+          },
+          "history": {
+            "$ref": "#/components/schemas/HistoryContext"
+          },
+          "facts": {
+            "items": {
+              "$ref": "#/components/schemas/Fact"
+            },
+            "type": "array",
+            "title": "Facts"
+          }
+        },
+        "type": "object",
+        "title": "MemoryResponse",
+        "description": "Response model for memory data."
+      },
+      "MemoryStatusResponse": {
+        "properties": {
+          "config": {
+            "$ref": "#/components/schemas/MemoryConfigResponse"
+          },
+          "data": {
+            "$ref": "#/components/schemas/MemoryResponse"
+          }
+        },
+        "type": "object",
+        "required": [
+          "config",
+          "data"
+        ],
+        "title": "MemoryStatusResponse",
+        "description": "Response model for memory status."
+      },
+      "ModelResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Unique identifier for the model"
+          },
+          "model": {
+            "type": "string",
+            "title": "Model",
+            "description": "Actual provider model identifier"
+          },
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name",
+            "description": "Human-readable name"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "Model description"
+          },
+          "supports_thinking": {
+            "type": "boolean",
+            "title": "Supports Thinking",
+            "description": "Whether model supports thinking mode",
+            "default": false
+          },
+          "supports_reasoning_effort": {
+            "type": "boolean",
+            "title": "Supports Reasoning Effort",
+            "description": "Whether model supports reasoning effort",
+            "default": false
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "model"
+        ],
+        "title": "ModelResponse",
+        "description": "Response model for model information."
+      },
+      "ModelsListResponse": {
+        "properties": {
+          "models": {
+            "items": {
+              "$ref": "#/components/schemas/ModelResponse"
+            },
+            "type": "array",
+            "title": "Models"
+          }
+        },
+        "type": "object",
+        "required": [
+          "models"
+        ],
+        "title": "ModelsListResponse",
+        "description": "Response model for listing all models."
+      },
+      "OptimizationReport": {
+        "properties": {
+          "report_period": {
+            "additionalProperties": {
+              "type": "string",
+              "format": "date-time"
+            },
+            "type": "object",
+            "title": "Report Period",
+            "description": "报告时间段"
+          },
+          "total_queries_analyzed": {
+            "type": "integer",
+            "title": "Total Queries Analyzed",
+            "description": "总分析查询数"
+          },
+          "average_query_time": {
+            "type": "number",
+            "title": "Average Query Time",
+            "description": "平均查询时间"
+          },
+          "slow_queries_count": {
+            "type": "integer",
+            "title": "Slow Queries Count",
+            "description": "慢查询数量"
+          },
+          "indexes_created": {
+            "type": "integer",
+            "title": "Indexes Created",
+            "description": "创建的索引数"
+          },
+          "indexes_dropped": {
+            "type": "integer",
+            "title": "Indexes Dropped",
+            "description": "删除的索引数"
+          },
+          "table_optimizations": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Table Optimizations",
+            "description": "表优化情况"
+          },
+          "performance_improvement": {
+            "type": "number",
+            "title": "Performance Improvement",
+            "description": "性能改进百分比"
+          },
+          "recommendations": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Recommendations",
+            "description": "建议"
+          },
+          "generated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Generated At",
+            "description": "报告生成时间"
+          }
+        },
+        "type": "object",
+        "required": [
+          "report_period",
+          "total_queries_analyzed",
+          "average_query_time",
+          "slow_queries_count",
+          "indexes_created",
+          "indexes_dropped",
+          "performance_improvement"
+        ],
+        "title": "OptimizationReport",
+        "description": "数据库优化报告"
+      },
+      "OptimizationRequest": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query",
+            "description": "要优化的查询"
+          },
+          "table_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table Name",
+            "description": "表名"
+          },
+          "sample_size": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Sample Size",
+            "description": "样本大小",
+            "default": 1000
+          },
+          "optimization_type": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/OptimizationType"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "description": "优化类型"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "OptimizationRequest",
+        "description": "优化请求"
+      },
+      "OptimizationType": {
+        "type": "string",
+        "enum": [
+          "index_creation",
+          "query_optimization",
+          "connection_pool",
+          "table_partitioning",
+          "vacuum_analyze",
+          "query_rewrite"
+        ],
+        "title": "OptimizationType",
+        "description": "优化类型枚举"
+      },
+      "QueryPerformanceAnalysis": {
+        "properties": {
+          "query": {
+            "type": "string",
+            "title": "Query",
+            "description": "分析的查询"
+          },
+          "execution_time": {
+            "type": "number",
+            "title": "Execution Time",
+            "description": "执行时间（秒）"
+          },
+          "rows_examined": {
+            "type": "integer",
+            "title": "Rows Examined",
+            "description": "检查的行数"
+          },
+          "rows_returned": {
+            "type": "integer",
+            "title": "Rows Returned",
+            "description": "返回的行数"
+          },
+          "index_usage": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Index Usage",
+            "description": "索引使用情况"
+          },
+          "suggestions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Suggestions",
+            "description": "优化建议"
+          },
+          "estimated_improvement": {
+            "type": "number",
+            "title": "Estimated Improvement",
+            "description": "预估改进百分比",
+            "default": 0.0
+          },
+          "analysis_timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Analysis Timestamp",
+            "description": "分析时间戳"
+          },
+          "table_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Table Name",
+            "description": "表名"
+          },
+          "query_plan": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Query Plan",
+            "description": "查询执行计划"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "execution_time",
+          "rows_examined",
+          "rows_returned"
+        ],
+        "title": "QueryPerformanceAnalysis",
+        "description": "查询性能分析结果"
+      },
+      "SkillInstallRequest": {
+        "properties": {
+          "thread_id": {
+            "type": "string",
+            "title": "Thread Id",
+            "description": "The thread ID where the .skill file is located"
+          },
+          "path": {
+            "type": "string",
+            "title": "Path",
+            "description": "Virtual path to the .skill file (e.g., mnt/user-data/outputs/my-skill.skill)"
+          }
+        },
+        "type": "object",
+        "required": [
+          "thread_id",
+          "path"
+        ],
+        "title": "SkillInstallRequest",
+        "description": "Request model for installing a skill from a .skill file."
+      },
+      "SkillInstallResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success",
+            "description": "Whether the installation was successful"
+          },
+          "skill_name": {
+            "type": "string",
+            "title": "Skill Name",
+            "description": "Name of the installed skill"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message",
+            "description": "Installation result message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "skill_name",
+          "message"
+        ],
+        "title": "SkillInstallResponse",
+        "description": "Response model for skill installation."
+      },
+      "SkillResponse": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "Name of the skill"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description",
+            "description": "Description of what the skill does"
+          },
+          "license": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "License",
+            "description": "License information"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category",
+            "description": "Category of the skill (public or custom)"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "Whether this skill is enabled",
+            "default": true
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "category"
+        ],
+        "title": "SkillResponse",
+        "description": "Response model for skill information."
+      },
+      "SkillUpdateRequest": {
+        "properties": {
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "description": "Whether to enable or disable the skill"
+          }
+        },
+        "type": "object",
+        "required": [
+          "enabled"
+        ],
+        "title": "SkillUpdateRequest",
+        "description": "Request model for updating a skill."
+      },
+      "SkillsListResponse": {
+        "properties": {
+          "skills": {
+            "items": {
+              "$ref": "#/components/schemas/SkillResponse"
+            },
+            "type": "array",
+            "title": "Skills"
+          }
+        },
+        "type": "object",
+        "required": [
+          "skills"
+        ],
+        "title": "SkillsListResponse",
+        "description": "Response model for listing all skills."
+      },
+      "SuggestionMessage": {
+        "properties": {
+          "role": {
+            "type": "string",
+            "title": "Role",
+            "description": "Message role: user|assistant"
+          },
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "Message content as plain text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "role",
+          "content"
+        ],
+        "title": "SuggestionMessage"
+      },
+      "SuggestionsRequest": {
+        "properties": {
+          "messages": {
+            "items": {
+              "$ref": "#/components/schemas/SuggestionMessage"
+            },
+            "type": "array",
+            "title": "Messages",
+            "description": "Recent conversation messages"
+          },
+          "n": {
+            "type": "integer",
+            "maximum": 5.0,
+            "minimum": 1.0,
+            "title": "N",
+            "description": "Number of suggestions to generate",
+            "default": 3
+          },
+          "model_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Model Name",
+            "description": "Optional model override"
+          }
+        },
+        "type": "object",
+        "required": [
+          "messages"
+        ],
+        "title": "SuggestionsRequest"
+      },
+      "SuggestionsResponse": {
+        "properties": {
+          "suggestions": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Suggestions",
+            "description": "Suggested follow-up questions"
+          }
+        },
+        "type": "object",
+        "title": "SuggestionsResponse"
+      },
+      "TableStatistics": {
+        "properties": {
+          "table_name": {
+            "type": "string",
+            "title": "Table Name",
+            "description": "表名"
+          },
+          "row_count": {
+            "type": "integer",
+            "title": "Row Count",
+            "description": "行数"
+          },
+          "size_mb": {
+            "type": "number",
+            "title": "Size Mb",
+            "description": "表大小（MB）"
+          },
+          "index_count": {
+            "type": "integer",
+            "title": "Index Count",
+            "description": "索引数量"
+          },
+          "avg_row_length": {
+            "type": "number",
+            "title": "Avg Row Length",
+            "description": "平均行长度"
+          },
+          "last_analyzed": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Last Analyzed",
+            "description": "最后分析时间"
+          },
+          "columns": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Columns",
+            "description": "列统计信息"
+          },
+          "indexes": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Indexes",
+            "description": "索引信息"
+          },
+          "fragmentation": {
+            "type": "number",
+            "title": "Fragmentation",
+            "description": "碎片化程度",
+            "default": 0.0
+          },
+          "growth_rate": {
+            "type": "number",
+            "title": "Growth Rate",
+            "description": "增长率（%）",
+            "default": 0.0
+          }
+        },
+        "type": "object",
+        "required": [
+          "table_name",
+          "row_count",
+          "size_mb",
+          "index_count",
+          "avg_row_length",
+          "last_analyzed"
+        ],
+        "title": "TableStatistics",
+        "description": "表统计信息"
+      },
+      "Tenant": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "租户名称"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "租户描述"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id",
+            "description": "租户ID"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status",
+            "description": "租户状态",
+            "default": "active"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At",
+            "description": "创建时间"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At",
+            "description": "更新时间"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "id",
+          "created_at"
+        ],
+        "title": "Tenant",
+        "description": "租户响应模型"
+      },
+      "TenantCreate": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name",
+            "description": "租户名称"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "租户描述"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name"
+        ],
+        "title": "TenantCreate",
+        "description": "创建租户请求"
+      },
+      "TenantUpdate": {
+        "properties": {
+          "name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name",
+            "description": "租户名称"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description",
+            "description": "租户描述"
+          },
+          "status": {
+            "anyOf": [
+              {
+                "type": "string",
+                "pattern": "^(active|inactive)$"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Status",
+            "description": "租户状态"
+          }
+        },
+        "type": "object",
+        "title": "TenantUpdate",
+        "description": "更新租户请求"
+      },
+      "TenantsResponse": {
+        "properties": {
+          "tenants": {
+            "items": {
+              "$ref": "#/components/schemas/Tenant"
+            },
+            "type": "array",
+            "title": "Tenants",
+            "description": "租户列表"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total",
+            "description": "租户总数"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tenants",
+          "total"
+        ],
+        "title": "TenantsResponse",
+        "description": "租户列表响应"
+      },
+      "ThreadCreateRequest": {
+        "properties": {
+          "metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Metadata"
+          }
+        },
+        "type": "object",
+        "title": "ThreadCreateRequest",
+        "description": "Request model for creating a thread."
+      },
+      "ThreadDeleteResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "message"
+        ],
+        "title": "ThreadDeleteResponse",
+        "description": "Response model for thread cleanup."
+      },
+      "ThreadResponse": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "tenant_id": {
+            "type": "string",
+            "title": "Tenant Id"
+          },
+          "created_at": {
+            "type": "string",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "title": "Updated At"
+          },
+          "metadata": {
+            "additionalProperties": true,
+            "type": "object",
+            "title": "Metadata"
+          },
+          "message_count": {
+            "type": "integer",
+            "title": "Message Count"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tenant_id",
+          "created_at",
+          "updated_at",
+          "metadata",
+          "message_count",
+          "status"
+        ],
+        "title": "ThreadResponse",
+        "description": "Response model for thread data."
+      },
+      "ToolCreateRequest": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "maxLength": 100,
+            "minLength": 1,
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Description"
+          },
+          "tool_type": {
+            "type": "string",
+            "pattern": "^(custom|mcp|builtin|agent)$",
+            "title": "Tool Type"
+          },
+          "category": {
+            "type": "string",
+            "maxLength": 50,
+            "minLength": 1,
+            "title": "Category"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "module_path": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Module Path"
+          },
+          "class_name": {
+            "type": "string",
+            "minLength": 1,
+            "title": "Class Name"
+          },
+          "args_schema": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Args Schema"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled",
+            "default": true
+          },
+          "tenant_scoped": {
+            "type": "boolean",
+            "title": "Tenant Scoped",
+            "default": false
+          },
+          "required_roles": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required Roles"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version",
+            "default": "1.0.0"
+          },
+          "version_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version Notes"
+          },
+          "created_from_config": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created From Config"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "description",
+          "tool_type",
+          "category",
+          "module_path",
+          "class_name"
+        ],
+        "title": "ToolCreateRequest",
+        "description": "创建工具请求（继承自服务层模型）"
+      },
+      "ToolExecutionResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "tool_id": {
+            "type": "integer",
+            "title": "Tool Id"
+          },
+          "tool_name": {
+            "type": "string",
+            "title": "Tool Name"
+          },
+          "thread_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Thread Id"
+          },
+          "user_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "User Id"
+          },
+          "tenant_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tenant Id"
+          },
+          "input_params": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Input Params"
+          },
+          "output": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Output"
+          },
+          "error": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Error"
+          },
+          "execution_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Time"
+          },
+          "started_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Started At"
+          },
+          "completed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Completed At"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "execution_metadata": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Execution Metadata"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tool_id",
+          "tool_name",
+          "started_at",
+          "status"
+        ],
+        "title": "ToolExecutionResponse",
+        "description": "工具执行记录响应模型"
+      },
+      "ToolListResponse": {
+        "properties": {
+          "tools": {
+            "items": {
+              "$ref": "#/components/schemas/ToolResponse"
+            },
+            "type": "array",
+            "title": "Tools"
+          },
+          "total": {
+            "type": "integer",
+            "title": "Total"
+          },
+          "page": {
+            "type": "integer",
+            "title": "Page"
+          },
+          "page_size": {
+            "type": "integer",
+            "title": "Page Size"
+          },
+          "total_pages": {
+            "type": "integer",
+            "title": "Total Pages"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tools",
+          "total",
+          "page",
+          "page_size",
+          "total_pages"
+        ],
+        "title": "ToolListResponse",
+        "description": "工具列表响应"
+      },
+      "ToolPermissionResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "tool_id": {
+            "type": "integer",
+            "title": "Tool Id"
+          },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
+          "can_execute": {
+            "type": "boolean",
+            "title": "Can Execute"
+          },
+          "can_view": {
+            "type": "boolean",
+            "title": "Can View"
+          },
+          "can_edit": {
+            "type": "boolean",
+            "title": "Can Edit"
+          },
+          "can_delete": {
+            "type": "boolean",
+            "title": "Can Delete"
+          },
+          "max_calls_per_day": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Calls Per Day"
+          },
+          "allowed_tenants": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Allowed Tenants"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "tool_id",
+          "role",
+          "can_execute",
+          "can_view",
+          "can_edit",
+          "can_delete",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ToolPermissionResponse",
+        "description": "工具权限响应模型"
+      },
+      "ToolResponse": {
+        "properties": {
+          "id": {
+            "type": "integer",
+            "title": "Id"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "tool_type": {
+            "type": "string",
+            "title": "Tool Type"
+          },
+          "category": {
+            "type": "string",
+            "title": "Category"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "enabled": {
+            "type": "boolean",
+            "title": "Enabled"
+          },
+          "is_builtin": {
+            "type": "boolean",
+            "title": "Is Builtin"
+          },
+          "is_system": {
+            "type": "boolean",
+            "title": "Is System"
+          },
+          "version": {
+            "type": "string",
+            "title": "Version"
+          },
+          "total_executions": {
+            "type": "integer",
+            "title": "Total Executions"
+          },
+          "successful_executions": {
+            "type": "integer",
+            "title": "Successful Executions"
+          },
+          "failed_executions": {
+            "type": "integer",
+            "title": "Failed Executions"
+          },
+          "last_executed_at": {
+            "anyOf": [
+              {
+                "type": "string",
+                "format": "date-time"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Last Executed At"
+          },
+          "avg_execution_time": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Avg Execution Time"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "updated_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Updated At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "name",
+          "description",
+          "tool_type",
+          "category",
+          "enabled",
+          "is_builtin",
+          "is_system",
+          "version",
+          "total_executions",
+          "successful_executions",
+          "failed_executions",
+          "created_at",
+          "updated_at"
+        ],
+        "title": "ToolResponse",
+        "description": "工具响应模型"
+      },
+      "ToolStats": {
+        "properties": {
+          "total_tools": {
+            "type": "integer",
+            "title": "Total Tools"
+          },
+          "enabled_tools": {
+            "type": "integer",
+            "title": "Enabled Tools"
+          },
+          "total_executions": {
+            "type": "integer",
+            "title": "Total Executions"
+          },
+          "avg_execution_time": {
+            "type": "number",
+            "title": "Avg Execution Time"
+          },
+          "success_rate": {
+            "type": "number",
+            "title": "Success Rate"
+          },
+          "most_used_tools": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Most Used Tools"
+          },
+          "recent_executions": {
+            "items": {
+              "$ref": "#/components/schemas/ToolExecutionResponse"
+            },
+            "type": "array",
+            "title": "Recent Executions"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_tools",
+          "enabled_tools",
+          "total_executions",
+          "avg_execution_time",
+          "success_rate",
+          "most_used_tools",
+          "recent_executions"
+        ],
+        "title": "ToolStats",
+        "description": "工具统计信息"
+      },
+      "ToolUpdateRequest": {
+        "properties": {
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "tags": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tags"
+          },
+          "args_schema": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Args Schema"
+          },
+          "enabled": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Enabled"
+          },
+          "tenant_scoped": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Tenant Scoped"
+          },
+          "required_roles": {
+            "anyOf": [
+              {
+                "items": {
+                  "type": "string"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Required Roles"
+          },
+          "version": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version"
+          },
+          "version_notes": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Version Notes"
+          }
+        },
+        "type": "object",
+        "title": "ToolUpdateRequest",
+        "description": "更新工具请求（继承自服务层模型）"
+      },
+      "UploadResponse": {
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "title": "Success"
+          },
+          "files": {
+            "items": {
+              "additionalProperties": {
+                "type": "string"
+              },
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Files"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "success",
+          "files",
+          "message"
+        ],
+        "title": "UploadResponse",
+        "description": "Response model for file upload."
+      },
+      "UserContext": {
+        "properties": {
+          "workContext": {
+            "$ref": "#/components/schemas/ContextSection"
+          },
+          "personalContext": {
+            "$ref": "#/components/schemas/ContextSection"
+          },
+          "topOfMind": {
+            "$ref": "#/components/schemas/ContextSection"
+          }
+        },
+        "type": "object",
+        "title": "UserContext",
+        "description": "Model for user context."
+      },
+      "UserDashboardResponse": {
+        "properties": {
+          "tool_executions": {
+            "type": "integer",
+            "title": "Tool Executions"
+          },
+          "cache_hit_rate": {
+            "type": "number",
+            "title": "Cache Hit Rate"
+          },
+          "storage_used": {
+            "type": "number",
+            "title": "Storage Used"
+          },
+          "storage_quota": {
+            "type": "number",
+            "title": "Storage Quota"
+          },
+          "api_quota": {
+            "type": "integer",
+            "title": "Api Quota"
+          },
+          "api_used": {
+            "type": "integer",
+            "title": "Api Used"
+          },
+          "avg_response_time": {
+            "type": "integer",
+            "title": "Avg Response Time"
+          },
+          "success_rate": {
+            "type": "number",
+            "title": "Success Rate"
+          },
+          "api_usage": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Api Usage"
+          },
+          "top_tools": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Top Tools"
+          },
+          "recent_activity": {
+            "items": {
+              "additionalProperties": true,
+              "type": "object"
+            },
+            "type": "array",
+            "title": "Recent Activity"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tool_executions",
+          "cache_hit_rate",
+          "storage_used",
+          "storage_quota",
+          "api_quota",
+          "api_used",
+          "avg_response_time",
+          "success_rate",
+          "api_usage",
+          "top_tools",
+          "recent_activity"
+        ],
+        "title": "UserDashboardResponse",
+        "description": "User dashboard data response."
+      },
+      "UserProfileResponse": {
+        "properties": {
+          "content": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Content",
+            "description": "USER.md content, or null if not yet created"
+          }
+        },
+        "type": "object",
+        "title": "UserProfileResponse",
+        "description": "Response model for the global user profile (USER.md)."
+      },
+      "UserProfileUpdateRequest": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content",
+            "description": "USER.md content — describes the user's background and preferences",
+            "default": ""
+          }
+        },
+        "type": "object",
+        "title": "UserProfileUpdateRequest",
+        "description": "Request body for setting the global user profile."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
