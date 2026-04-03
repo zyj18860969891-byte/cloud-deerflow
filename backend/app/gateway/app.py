@@ -272,6 +272,10 @@ This gateway provides custom endpoints for models, MCP configuration, skills, an
                 "description": "Manage multi-tenant operations and tenant switching",
             },
             {
+                "name": "subscription",
+                "description": "Subscription management and payment processing",
+            },
+            {
                 "name": "database-optimization",
                 "description": "Database performance optimization and monitoring endpoints",
             },
